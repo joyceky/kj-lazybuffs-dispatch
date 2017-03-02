@@ -1,24 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { getCompletedOrders, getDispatchCompletedOrdersSortBy } from '../../../actions';
 import ListItemCompleted from './ListItemCompleted';
 
-
 class CompletedOrdersList extends Component {
-  handleSortBy(sortStr){
-    this.props.getDispatchCompletedOrdersSortBy(sortStr, this.props.auth);
-  }
-
   render() {
     return (
       <section style={style.list}>
-        <section style={listSortBy}>
-          <button onClick={() => this.handleSortBy('day')}>Today</button>
-          <button onClick={() => this.handleSortBy('month')}>Month</button>
-          <button onClick={() => this.handleSortBy('year')}>Year</button>
-        </section>
-        {this.props.dispatchCompletedOrders.map(order => {
+        {this.props.orders.map(order => {
           return <ListItemCompleted order={order} key={`compl${order.orderId}`}/>
         })}
       </section>
@@ -43,12 +31,8 @@ const style = {
   },
 }
 
-function mapStateToProps({ auth, dispatchCompletedOrders }) {
-  return { auth, dispatchCompletedOrders };
+function mapStateToProps({ auth }) {
+  return { auth };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ getCompletedOrders, getDispatchCompletedOrdersSortBy }, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(CompletedOrdersList);
+export default connect(mapStateToProps, null)(CompletedOrdersList);
