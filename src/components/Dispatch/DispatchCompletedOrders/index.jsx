@@ -14,7 +14,9 @@ class CompletedOrders extends Component {
     this.state = {
       orders: [],
       month: today.getMonth(),
-      store: -1
+      year: today.getFullYear(),
+      storeSelected: -1,
+      stores: []
     };
 
     this.getStores = this.getStores.bind(this);
@@ -26,46 +28,43 @@ class CompletedOrders extends Component {
 
   componentDidMount() {
     this.getStores();
-    this.getOrdersForMonth(this.state.month, this.state.store);
-
+    this.getOrdersForMonth(this.state.month, this.state.storeSelected);
   }
 
   getStores() {
     axios.get(`${API_URL}/stores`)
     .then(({ data }) => {
-
-      const stores = data.map((store) => {
+      let storesData = data.map((store) => {
         return [store.storeName, store.storeId];
       });
-      console.log("stores", stores);
-
+      this.setState({ stores: storesData });
     })
   }
 
   getOrdersForMonth(month, store) {
-    console.log("store", store);
     if (store !== -1) {
-      console.log("Specific store desired. Id: ", store );
-      console.log("Please make a store-specific api call here");
-
-      //NOTE: is there an endpoint to get specific store orders?
-      // axios.get(`${API_URL}/stores`, { auth: this.props.auth, store })
-      // .then(({ data }) => {
-      //   console.log("SPECIFIC STORE DATA: ", data);
-      //   this.setState({ orders: data, month: parseInt(month) });
-      // })
-    }
+      axios.get(`${API_URL}/stores/orders`, { auth: this.props.auth, store })
+        .then(({ data }) => {
+          // console.log("SPECIFIC STORE DATA: ", data);
+          this.setState({ orders: data, month: parseInt(month), store: store });
+        })
+      }
     else {
       axios.post(`${API_URL}/dispatch/orders/completed/month`, { auth: this.props.auth, month })
       .then(({ data }) => {
-        console.log(data);
-        this.setState({ orders: data, month: parseInt(month) });
+        // console.log(data);
+        this.setState({ orders: data, month: parseInt(month), storeSelected: store });
       })
     }
   }
 
   formatData(orders) {
-    const days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
+    // console.log("The Month: ", this.state.month);
+    const daysNum = new Date(this.state.year, this.state.month, 0).getDate();
+    const days = [];
+    // console.log("daysNum Array: ", daysNum);
+
+    for (var i = 1; i <= daysNum; i++) { days.push(i) };
 
     const cleanData = days.map((day) => {
       const daysOrders = orders.filter((order) => {
@@ -83,7 +82,7 @@ class CompletedOrders extends Component {
   }
 
   onMonthChange(event) {
-    this.getOrdersForMonth(event.target.value, this.state.store);
+    this.getOrdersForMonth(event.target.value, this.state.storeSelected);
   }
 
   onStoreChange(event) {
@@ -99,23 +98,23 @@ class CompletedOrders extends Component {
               <h1 style={title}>No Completed Orders Today</h1>
             </span>
           : <CompletedOrdersList orders={this.state.orders} /> } */}
-
         <select onChange={this.onMonthChange} value={this.state.month}>
-          <option value={0}>January</option>
-          <option value={1}>February</option>
-          <option value={2}>March</option>
-          <option value={3}>April</option>
-          <option value={4}>May</option>
-          <option value={5}>June</option>
-          <option value={6}>July</option>
-          <option value={7}>August</option>
-          <option value={8}>September</option>
-          <option value={9}>October</option>
-          <option value={10}>November</option>
-          <option value={11}>December</option>
+          <option value={1}>January</option>
+          <option value={2}>February</option>
+          <option value={3}>March</option>
+          <option value={4}>April</option>
+          <option value={5}>May</option>
+          <option value={6}>June</option>
+          <option value={7}>July</option>
+          <option value={8}>August</option>
+          <option value={9}>September</option>
+          <option value={10}>October</option>
+          <option value={11}>November</option>
+          <option value={12}>December</option>
         </select>
 
         <select onChange={this.onStoreChange} value={this.state.store}>
+          {/* Map over store id as value and store name as text */}
           <option value={-1}>All Stores</option>
           <option value={1}>Store 1</option>
           <option value={2}>Store 2</option>
