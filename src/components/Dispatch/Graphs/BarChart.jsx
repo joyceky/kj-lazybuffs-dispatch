@@ -4,7 +4,8 @@ import { BarChart, Bar, Tooltip, XAxis, YAxis, Legend, CartesianGrid } from 'rec
 const BarChartComponent = ({orders, dataKey, color}) => {
   // console.log("Orders in bar chart", orders);
   return (
-      <div style={barChartStyle}>
+      // <div style={barChartStyle}>
+      <div>
         <h4>{dataKey} Chart</h4>
         <BarChart width={400} height={300} data={orders}>
           <XAxis dataKey="date" stroke="#8884d8" />
@@ -17,9 +18,9 @@ const BarChartComponent = ({orders, dataKey, color}) => {
   );
 };
 
-const barChartStyle = {
-  width: '60%',
-  textAlign: 'center'
-};
+// const barChartStyle = {
+//   width: '60%',
+//   textAlign: 'center'
+// };
 
 export default BarChartComponent;

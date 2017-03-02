@@ -5,35 +5,63 @@ import BarChartComponent from './Graphs/BarChart';
 import axios from 'axios';
 import { API_URL } from '../../../actions';
 
-
-
 class CompletedOrders extends Component {
   constructor() {
     super();
 
-    let today = new Date(Date.now());
+    const today = new Date(Date.now());
 
     this.state = {
       orders: [],
-      month: today.getMonth()
+      month: today.getMonth(),
+      store: -1
     };
 
+    this.getStores = this.getStores.bind(this);
     this.getOrdersForMonth = this.getOrdersForMonth.bind(this);
-    // this.onMonthChange = this.onMonthChange.bind(this);
+    this.onMonthChange = this.onMonthChange.bind(this);
+    this.onStoreChange = this.onStoreChange.bind(this);
     this.formatData = this.formatData.bind(this);
   }
 
   componentDidMount() {
-  //  this.props.getCompletedOrders(this.props.auth, 'today');
-   this.getOrdersForMonth(this.state.month);
+    this.getStores();
+    this.getOrdersForMonth(this.state.month, this.state.store);
+
   }
 
-  getOrdersForMonth(month) {
-    axios.post(`${API_URL}/dispatch/orders/completed/month`, { auth: this.props.auth, month })
+  getStores() {
+    axios.get(`${API_URL}/stores`)
     .then(({ data }) => {
-      console.log(data);
-      this.setState({ orders: data, month: parseInt(month) });
+
+      const stores = data.map((store) => {
+        return [store.storeName, store.storeId];
+      });
+      console.log("stores", stores);
+
     })
+  }
+
+  getOrdersForMonth(month, store) {
+    console.log("store", store);
+    if (store !== -1) {
+      console.log("Specific store desired. Id: ", store );
+      console.log("Please make a store-specific api call here");
+
+      //NOTE: is there an endpoint to get specific store orders?
+      // axios.get(`${API_URL}/stores`, { auth: this.props.auth, store })
+      // .then(({ data }) => {
+      //   console.log("SPECIFIC STORE DATA: ", data);
+      //   this.setState({ orders: data, month: parseInt(month) });
+      // })
+    }
+    else {
+      axios.post(`${API_URL}/dispatch/orders/completed/month`, { auth: this.props.auth, month })
+      .then(({ data }) => {
+        console.log(data);
+        this.setState({ orders: data, month: parseInt(month) });
+      })
+    }
   }
 
   formatData(orders) {
@@ -45,19 +73,22 @@ class CompletedOrders extends Component {
       });
 
       const total = daysOrders.reduce((curr, nextOrder) => {
-         return curr + parseFloat(nextOrder.orderSubTotal);
+         return curr + parseFloat(nextOrder.orderSubTotal) ;
       }, 0);
 
       return { date: day, total, orders: daysOrders.length };
     });
-    console.log("CLEANDATA", cleanData);
+
     return cleanData;
   }
-  //
-  // onMonthChange(event) {
-  //   // console.log("event target val", event.target.value);
-  //   this.getOrdersForMonth(event.target.value);
-  // }
+
+  onMonthChange(event) {
+    this.getOrdersForMonth(event.target.value, this.state.store);
+  }
+
+  onStoreChange(event) {
+    this.getOrdersForMonth(event.target.value, this.state.month);
+  }
 
   render() {
     return (
@@ -68,9 +99,40 @@ class CompletedOrders extends Component {
               <h1 style={title}>No Completed Orders Today</h1>
             </span>
           : <CompletedOrdersList orders={this.state.orders} /> } */}
-        </section>
+
+        <select onChange={this.onMonthChange} value={this.state.month}>
+          <option value={0}>January</option>
+          <option value={1}>February</option>
+          <option value={2}>March</option>
+          <option value={3}>April</option>
+          <option value={4}>May</option>
+          <option value={5}>June</option>
+          <option value={6}>July</option>
+          <option value={7}>August</option>
+          <option value={8}>September</option>
+          <option value={9}>October</option>
+          <option value={10}>November</option>
+          <option value={11}>December</option>
+        </select>
+
+        <select onChange={this.onStoreChange} value={this.state.store}>
+          <option value={-1}>All Stores</option>
+          <option value={1}>Store 1</option>
+          <option value={2}>Store 2</option>
+          <option value={3}>Store 3</option>
+          <option value={4}>Store 4</option>
+          <option value={5}>Store 5</option>
+          <option value={6}>Store 6</option>
+          <option value={7}>Store 7</option>
+          <option value={8}>Store 8</option>
+          <option value={9}>Store 9</option>
+          <option value={10}>Store 10</option>
+          <option value={11}>Store 11</option>
+        </select>
+
         <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="orders" color="#7830ee" />
         <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="total" color="#29cb56" />
+      </section>
       </div>
     );
   }
