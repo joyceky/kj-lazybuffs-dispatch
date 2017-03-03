@@ -35,9 +35,10 @@ class CompletedOrders extends Component {
     axios.get(`${API_URL}/stores`)
     .then(({ data }) => {
       let storesData = data.map((store) => {
-        return [store.storeName, store.storeId];
+        return {"name": store.storeName, "id": store.storeId};
       });
       this.setState({ stores: storesData });
+      console.log("storeData ", storesData);
     })
   }
 
@@ -113,8 +114,15 @@ class CompletedOrders extends Component {
           <option value={12}>December</option>
         </select>
 
+
         <select onChange={this.onStoreChange} value={this.state.store}>
-          {/* Map over store id as value and store name as text */}
+          {this.state.stores.map(store => {
+            return <option key={store.id} value={store.id}>{store.name}</option>
+          })}
+        </select>
+
+
+        {/* <select onChange={this.onStoreChange} value={this.state.store}>
           <option value={-1}>All Stores</option>
           <option value={1}>Store 1</option>
           <option value={2}>Store 2</option>
@@ -127,7 +135,7 @@ class CompletedOrders extends Component {
           <option value={9}>Store 9</option>
           <option value={10}>Store 10</option>
           <option value={11}>Store 11</option>
-        </select>
+        </select> */}
 
         <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="orders" color="#7830ee" />
         <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="total" color="#29cb56" />
