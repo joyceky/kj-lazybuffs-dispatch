@@ -35,7 +35,7 @@ class CompletedOrders extends Component {
     axios.get(`${API_URL}/stores`)
     .then(({ data }) => {
       let storesData = data.map((store) => {
-        return {"name": store.storeName, "id": store.storeId};
+        return {"storeName": store.storeName, "storeId": store.storeId};
       });
       this.setState({ stores: storesData });
       console.log("storeData ", storesData);
@@ -44,10 +44,15 @@ class CompletedOrders extends Component {
 
   getOrdersForMonth(month, store) {
     if (store !== -1) {
-      axios.get(`${API_URL}/stores/orders`, { auth: this.props.auth, store })
+      console.log("month", month, "store", store);
+      console.log(`${API_URL}/stores/orders`, { auth: this.props.auth, storeId: store, month: month});
+      axios.get(`${API_URL}/stores/orders`, { auth: this.props.auth, storeId: store.store })
         .then(({ data }) => {
           // console.log("SPECIFIC STORE DATA: ", data);
           this.setState({ orders: data, month: parseInt(month), store: store });
+        })
+        .catch((err) => {
+          console.log("Error: ", err);
         })
       }
     else {
@@ -90,7 +95,8 @@ class CompletedOrders extends Component {
   }
 
   onStoreChange(event) {
-    this.getOrdersForMonth(event.target.value, this.state.month);
+    console.log();
+    this.getOrdersForMonth(this.state.month, event.target.value);
   }
 
   render() {
@@ -122,7 +128,7 @@ class CompletedOrders extends Component {
           <option key={-1} value={-1}>All Stores</option>
 
           {this.state.stores.map(store => {
-            return <option key={store.id} value={store.id}>{store.name}</option>
+            return <option key={store.storeId} value={store.storeId}>{store.storeName}</option>
           })}
         </select>
 
