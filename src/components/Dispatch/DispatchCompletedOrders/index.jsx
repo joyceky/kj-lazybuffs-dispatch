@@ -56,6 +56,9 @@ class CompletedOrders extends Component {
         // console.log(data);
         this.setState({ orders: data, month: parseInt(month), storeSelected: store });
       })
+      .catch((err) => {
+        console.log("Error: ", err);
+      })
     }
   }
 
@@ -116,26 +119,12 @@ class CompletedOrders extends Component {
 
 
         <select onChange={this.onStoreChange} value={this.state.store}>
+          <option key={-1} value={-1}>All Stores</option>
+
           {this.state.stores.map(store => {
             return <option key={store.id} value={store.id}>{store.name}</option>
           })}
         </select>
-
-
-        {/* <select onChange={this.onStoreChange} value={this.state.store}>
-          <option value={-1}>All Stores</option>
-          <option value={1}>Store 1</option>
-          <option value={2}>Store 2</option>
-          <option value={3}>Store 3</option>
-          <option value={4}>Store 4</option>
-          <option value={5}>Store 5</option>
-          <option value={6}>Store 6</option>
-          <option value={7}>Store 7</option>
-          <option value={8}>Store 8</option>
-          <option value={9}>Store 9</option>
-          <option value={10}>Store 10</option>
-          <option value={11}>Store 11</option>
-        </select> */}
 
         <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="orders" color="#7830ee" />
         <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="total" color="#29cb56" />
