@@ -46,7 +46,7 @@ class CompletedOrders extends Component {
     if (store !== -1) {
       console.log("month", month, "store", store);
       console.log(`${API_URL}/stores/orders`, { auth: this.props.auth, storeId: store, month: month});
-      axios.get(`${API_URL}/stores/orders`, { auth: this.props.auth, storeId: store.store })
+      axios.post(`${API_URL}/stores/orders`, { auth: this.props.auth, storeId: store.store, month: month })
         .then(({ data }) => {
           // console.log("SPECIFIC STORE DATA: ", data);
           this.setState({ orders: data, month: parseInt(month), store: store });
