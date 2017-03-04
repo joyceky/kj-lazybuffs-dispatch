@@ -16,13 +16,15 @@ class CompletedOrders extends Component {
       month: today.getMonth(),
       year: today.getFullYear(),
       storeSelected: -1,
-      stores: []
+      stores: [],
+      orderType: "all"
     };
 
     this.getStores = this.getStores.bind(this);
     this.getOrdersForMonth = this.getOrdersForMonth.bind(this);
     this.onMonthChange = this.onMonthChange.bind(this);
     this.onStoreChange = this.onStoreChange.bind(this);
+    this.onOrderTypeChange = this.onOrderTypeChange.bind(this);
     this.formatData = this.formatData.bind(this);
   }
 
@@ -95,46 +97,58 @@ class CompletedOrders extends Component {
   }
 
   onStoreChange(event) {
-    console.log();
-    this.getOrdersForMonth(this.state.month, event.target.value);
+    let storeId = event.target.value;
+    this.getOrdersForMonth(this.state.month, storeId);
+  }
+
+  onOrderTypeChange(event) {
+    let orderType = event.target.value;
+    this.getOrdersForMonth(this.state.month, orderType);
   }
 
   render() {
     return (
       <div>
         <section style={style.container}>
-          {/* {this.state.orders.length === 0
+
+          <select onChange={this.onOrderTypeChange} >
+            <option value="all">All</option>
+            <option value="multi">Multi</option>
+            <option value="single">Single</option>
+          </select>
+
+          <select onChange={this.onMonthChange} value={this.state.month}>
+            <option value={1}>January</option>
+            <option value={2}>February</option>
+            <option value={3}>March</option>
+            <option value={4}>April</option>
+            <option value={5}>May</option>
+            <option value={6}>June</option>
+            <option value={7}>July</option>
+            <option value={8}>August</option>
+            <option value={9}>September</option>
+            <option value={10}>October</option>
+            <option value={11}>November</option>
+            <option value={12}>December</option>
+          </select>
+
+          <select onChange={this.onStoreChange} value={this.state.store}>
+            <option key={-1} value={-1}>All Stores</option>
+
+            {this.state.stores.map(store => {
+              return <option key={store.storeId} value={store.storeId}>{store.storeName}</option>
+            })}
+          </select>
+
+          <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="orders" color="#7830ee" />
+          <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="total" color="#29cb56" />
+
+          {this.state.orders.length === 0
           ? <span style={subContainer}>
               <h1 style={title}>No Completed Orders Today</h1>
             </span>
-          : <CompletedOrdersList orders={this.state.orders} /> } */}
-        <select onChange={this.onMonthChange} value={this.state.month}>
-          <option value={1}>January</option>
-          <option value={2}>February</option>
-          <option value={3}>March</option>
-          <option value={4}>April</option>
-          <option value={5}>May</option>
-          <option value={6}>June</option>
-          <option value={7}>July</option>
-          <option value={8}>August</option>
-          <option value={9}>September</option>
-          <option value={10}>October</option>
-          <option value={11}>November</option>
-          <option value={12}>December</option>
-        </select>
-
-
-        <select onChange={this.onStoreChange} value={this.state.store}>
-          <option key={-1} value={-1}>All Stores</option>
-
-          {this.state.stores.map(store => {
-            return <option key={store.storeId} value={store.storeId}>{store.storeName}</option>
-          })}
-        </select>
-
-        <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="orders" color="#7830ee" />
-        <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="total" color="#29cb56" />
-      </section>
+          : <CompletedOrdersList orders={this.state.orders} /> }
+        </section>
       </div>
     );
   }
