@@ -101,7 +101,6 @@ class CompletedOrders extends Component {
   }
 
   formatData(orders) {
-    // console.log("The Month: ", this.state.month);
     const daysNum = new Date(this.state.year, this.state.month+1, 0).getDate();
     const days = [];
     console.log("daysNum: ", daysNum, days);
@@ -110,9 +109,12 @@ class CompletedOrders extends Component {
 
     const cleanData = days.map((day) => {
       const daysOrders = orders.filter((order) => {
-        console.log("Month", new Date(parseInt(order.orderCreatedAt) + 420000).getMonth());
-        console.log("Day", new Date(parseInt(order.orderCreatedAt) + 420000).getDate());
-
+        let date = new Date(parseInt(order.orderCreatedAt)- 420000);
+        if ( date.getMonth() === 1) {
+          if (this.state.month !== 1) {
+            return false;
+          }
+        }
         if ( new Date(parseInt(order.orderCreatedAt) + 420000).getDate() === day) return true;
       });
 
@@ -134,7 +136,6 @@ class CompletedOrders extends Component {
     this.setState({ year: parseInt(event.target.value) });
   }
   onStoreChange(event) {
-    // let storeId = event.target.value;
     this.setState({ storeId: parseInt(event.target.value) });
   }
 
@@ -177,7 +178,7 @@ class CompletedOrders extends Component {
           }
           </select>
 
-          <select onChange={this.onStoreChange} value={this.state.store}>
+          <select onChange={this.onStoreChange} value={this.state.storeId}>
             <option key={0} value={0}>All Stores</option>
 
             {this.state.stores.map(store => {
@@ -186,7 +187,7 @@ class CompletedOrders extends Component {
           </select>
 
           <button onClick={() => this.getOrderData(this.state.month, this.state.year, this.state.storeId)}>Submit</button>
-
+          
           {this.state.loading ? <span>Loading...</span> :
             <div>
               <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="orders" color="#7830ee" />
