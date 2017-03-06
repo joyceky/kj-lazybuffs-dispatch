@@ -143,7 +143,16 @@ class CompletedOrders extends Component {
     let orderType = event.target.value;
   }
 
+  calcRevenue(orders){
+      return orders
+      .reduce((prev, curr) => {
+        return prev + parseFloat(curr.orderSubTotal);
+      }, 0).toFixed(2);
+  }
+
   render() {
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
     return (
       <div>
         <section style={style.container}>
@@ -154,19 +163,10 @@ class CompletedOrders extends Component {
             <option value="single">Single</option>
           </select>
 
-          <select onChange={this.selectMonth} value={this.state.month}>
-            <option value={0}>January</option>
-            <option value={1}>February</option>
-            <option value={2}>March</option>
-            <option value={3}>April</option>
-            <option value={4}>May</option>
-            <option value={5}>June</option>
-            <option value={6}>July</option>
-            <option value={7}>August</option>
-            <option value={8}>September</option>
-            <option value={9}>October</option>
-            <option value={10}>November</option>
-            <option value={11}>December</option>
+          <select style={style.select} onChange={this.selectMonth} value={this.state.month}>
+              {months.map((monthVal, i) => {
+            return <option value={i}>{monthVal}</option>
+          })}
           </select>
 
           <select style={style.select} onChange={this.selectYear} value={this.state.year}>
@@ -192,8 +192,14 @@ class CompletedOrders extends Component {
 
           {!this.state.loading && this.state.orders.length > 0 ?
             <div>
+              <p>Orders Analytics</p>
               <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="orders" color="#7830ee" />
+
+              <p>Revenue Analytics</p>
               <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="total" color="#29cb56" />
+
+              <p>{`Revenue for ${months[this.state.month]} ${this.state.year}: $${ this.calcRevenue(this.state.orders)}`}</p>
+
               <CompletedOrdersList orders={this.state.orders} />
             </div>
           : null }
