@@ -5,7 +5,6 @@ const BarChartComponent = ({orders, dataKey, color}) => {
   // console.log("Orders in bar chart", orders);
   return (
       <div style={barChartStyle}>
-        <h4>{dataKey} Chart</h4>
         <BarChart width={1100} height={500} data={orders}>
           <XAxis dataKey="date" stroke="#8884d8" />
           <YAxis />

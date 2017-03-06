@@ -15,7 +15,7 @@ class CompletedOrders extends Component {
       orders: [],
       month: today.getMonth(),
       year: today.getFullYear(),
-      storeSelected: -1,
+      storeId: 0,
       stores: [],
       orderType: "all"
     };
@@ -23,6 +23,7 @@ class CompletedOrders extends Component {
     this.getStores = this.getStores.bind(this);
     this.getOrdersForMonth = this.getOrdersForMonth.bind(this);
     this.onMonthChange = this.onMonthChange.bind(this);
+    this.selectYear = this.selectYear.bind(this);
     this.onStoreChange = this.onStoreChange.bind(this);
     this.onOrderTypeChange = this.onOrderTypeChange.bind(this);
     this.formatData = this.formatData.bind(this);
@@ -30,7 +31,7 @@ class CompletedOrders extends Component {
 
   componentDidMount() {
     this.getStores();
-    this.getOrdersForMonth(this.state.month, this.state.storeSelected);
+    this.getOrdersForMonth(this.state.month, this.state.storeId);
   }
 
   getStores() {
@@ -44,24 +45,24 @@ class CompletedOrders extends Component {
     })
   }
 
-  getOrdersForMonth(month, store) {
-    if (store !== -1) {
-      console.log("month", month, "store", store);
-      console.log(`${API_URL}/stores/orders`, { auth: this.props.auth, storeId: store, month: month});
-      axios.post(`${API_URL}/stores/orders`, { auth: this.props.auth, storeId: store.store, month: month })
+  getOrdersForMonth(month, storeId) {
+    if (storeId > 0) {
+      console.log("month", month, "storeId", storeId);
+      console.log(`${API_URL}/dispatch/stores/orders`, { auth: this.props.auth, storeId, month });
+      axios.post(`${API_URL}/dispatch/stores/orders`, { auth: this.props.auth, storeId, month })
         .then(({ data }) => {
-          // console.log("SPECIFIC STORE DATA: ", data);
-          this.setState({ orders: data, month: parseInt(month), store: store });
+          console.log("SPECIFIC STORE DATA: ", data);
+          this.setState({ orders: data, month: parseInt(month), storeId });
         })
         .catch((err) => {
           console.log("Error: ", err);
         })
-      }
+    }
     else {
       axios.post(`${API_URL}/dispatch/orders/completed/month`, { auth: this.props.auth, month })
       .then(({ data }) => {
         // console.log(data);
-        this.setState({ orders: data, month: parseInt(month), storeSelected: store });
+        this.setState({ orders: data, month, storeId });
       })
       .catch((err) => {
         console.log("Error: ", err);
@@ -93,9 +94,13 @@ class CompletedOrders extends Component {
   }
 
   onMonthChange(event) {
-    this.getOrdersForMonth(event.target.value, this.state.storeSelected);
+    this.getOrdersForMonth(event.target.value, this.state.storeId);
   }
 
+  selectYear(event){
+    // this.setState({ year: parseInt(e.target.value) });
+    this.getOrderData(this.state.month, e.target.value);
+  }
   onStoreChange(event) {
     let storeId = event.target.value;
     this.getOrdersForMonth(this.state.month, storeId);
@@ -132,12 +137,22 @@ class CompletedOrders extends Component {
             <option value={12}>December</option>
           </select>
 
+          <select style={style.select} onChange={this.selectYear} value={this.state.year}>
+          {
+            [2014,2015,2016,2017]
+            .map((year) => {
+              return <option value={year}>{year}</option>
+            })
+          }
+          </select>
+
           <select onChange={this.onStoreChange} value={this.state.store}>
-            <option key={-1} value={-1}>All Stores</option>
+            <option key={0} value={0}>All Stores</option>
 
             {this.state.stores.map(store => {
               return <option key={store.storeId} value={store.storeId}>{store.storeName}</option>
             })}
+
           </select>
 
           <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="orders" color="#7830ee" />
