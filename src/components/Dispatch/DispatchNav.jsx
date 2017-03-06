@@ -56,6 +56,7 @@ class DispatchNav extends Component {
 
 const navStyle = {
   position: 'fixed',
+  zIndex: '10',
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',

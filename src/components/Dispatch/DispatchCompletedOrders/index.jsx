@@ -157,57 +157,80 @@ class CompletedOrders extends Component {
       <div>
         <section style={style.container}>
 
-          <select onChange={this.onOrderTypeChange} >
-            <option value="all">All</option>
-            <option value="multi">Multi</option>
-            <option value="single">Single</option>
-          </select>
+        <section style={style.previewBanner}>
+          ANALYTICS BETA
+        </section>
 
-          <select style={style.select} onChange={this.selectMonth} value={this.state.month}>
-              {months.map((monthVal, i) => {
-            return <option value={i}>{monthVal}</option>
-          })}
-          </select>
+        <section style={style.header}>
+          <section>
+            <select style={style.select} onChange={this.onOrderTypeChange} >
+              <option value="all">All</option>
+              <option value="multi">Multi</option>
+              <option value="single">Single</option>
+            </select>
 
-          <select style={style.select} onChange={this.selectYear} value={this.state.year}>
+            <select style={style.select} onChange={this.selectMonth} value={this.state.month}>
+              {
+                months.map((monthVal, i) => {
+                  return <option value={i}>{monthVal}</option>
+                })
+              }
+            </select>
+
+            <select style={style.select} onChange={this.selectYear} value={this.state.year}>
+              {
+                [2014,2015,2016,2017]
+                .map((year) => {
+                  return <option value={year}>{year}</option>
+                })
+              }
+            </select>
+
+            <select style={style.select} onChange={this.onStoreChange} value={this.state.storeId}>
+              <option key={0} value={0}>All Stores</option>
+              {
+                this.state.stores.map(store => {
+                  return <option key={store.storeId} value={store.storeId}>{store.storeName}</option>
+                })
+              }
+            </select>
+
+            <button onClick={() => this.getOrderData(this.state.month, this.state.year, this.state.storeId)}>Submit</button>
+          </section>
+        </section>
+
+          { this.state.loading ?
+            <span style={subContainer}>
+              <h1 style={title}>Loading analytics...</h1>
+            </span>
+            : null }
           {
-            [2014,2015,2016,2017]
-            .map((year) => {
-              return <option value={year}>{year}</option>
-            })
-          }
-          </select>
-
-          <select onChange={this.onStoreChange} value={this.state.storeId}>
-            <option key={0} value={0}>All Stores</option>
-
-            {this.state.stores.map(store => {
-              return <option key={store.storeId} value={store.storeId}>{store.storeName}</option>
-            })}
-          </select>
-
-          <button onClick={() => this.getOrderData(this.state.month, this.state.year, this.state.storeId)}>Submit</button>
-
-          {this.state.loading ? <span>Loading...</span> : null}
-
-          {!this.state.loading && this.state.orders.length > 0 ?
+            !this.state.loading && this.state.orders.length > 0 ?
             <div>
-              <p>Orders Analytics</p>
-              <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="orders" color="#7830ee" />
+              <section style={style.chartContainer}>
+                <div>
+                  <p>Orders Analytics</p>
+                  <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="orders" color="#7830ee" />
 
-              <p>Revenue Analytics</p>
-              <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="total" color="#29cb56" />
+                  <p>Revenue Analytics</p>
+                  <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="total" color="#29cb56" />
 
-              <p>{`Revenue for ${months[this.state.month]} ${this.state.year}: $${ this.calcRevenue(this.state.orders)}`}</p>
-
-              <CompletedOrdersList orders={this.state.orders} />
+                  <p>{`Revenue for ${months[this.state.month]} ${this.state.year}: $${ this.calcRevenue(this.state.orders)}`}</p>
+                </div>
+              </section>
+              <section>
+                  <CompletedOrdersList orders={this.state.orders} />
+              </section>
             </div>
-          : null }
-          {!this.state.loading && this.state.orders.length === 0 ?
+            : null
+          }
+          {
+            !this.state.loading && this.state.orders.length === 0 ?
             <span style={subContainer}>
               <h1 style={title}>No Completed Orders For This Period</h1>
-            </span> : null }
-        </section>
+            </span> : null
+          }
+          </section>
       </div>
     );
   }
@@ -225,22 +248,78 @@ const title = {
   padding: '0',
 };
 
-
 const style = {
   container: {
-    position: 'fixed',
+    marginTop: '50px',
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+  },
+  select: {
+    height: '22px',
+    fontSize: '16px',
+    margin: '8px'
+  },
+  header: {
+    padding: '16px',
+    width: '100%',
+    boxSizing: 'border-box',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    fontSize: '20px'
+  },
+  chartContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    height: 'auto',
+    width: 'auto',
+    fontSize: '20px',
+    textAlign: 'center'
+  },
+  listStyle: {
+    listStyle: 'none',
+    margin: '0',
+    width: '100%',
+    padding: '0',
+  },
+  listSortBy: {
+    display: 'flex',
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    margin: '8px',
+  },
+  listSortByButton: {},
+  allOrdersTitle: {
+    margin: '0',
+    padding: '16px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderBottom: '2px solid lightgrey',
+  },
+  noOrdersTitle: {
+    fontSize: '20px',
+    margin: '0',
+    padding: '16px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  previewBanner: {
     top: '50px',
     left: '0',
-    height: 'calc(100% - 50px)',
     width: '100%',
-    overflow: 'scroll',
+    fontSize: '24px',
+    padding: '8px',
+    backgroundColor: '#414141',
+    textAlign: 'center',
+    color: '#FFB300',
   },
-  title: {
-    margin: '0',
-    marginTop: '8px',
-    padding: '0',
-  }
-}
+};
 
 function mapStateToProps({ auth }) {
   return { auth };
