@@ -10,6 +10,8 @@ class CompletedOrders extends Component {
     super();
 
     const today = new Date(Date.now());
+    const adjustedToday = today.getTimezoneOffset();
+    console.log("offset", adjustedToday);
 
     this.state = {
       orders: [],
@@ -17,12 +19,13 @@ class CompletedOrders extends Component {
       year: today.getFullYear(),
       storeId: 0,
       stores: [],
-      orderType: "all"
+      orderType: "all",
+      loading: false
     };
 
     this.getStores = this.getStores.bind(this);
-    this.getOrdersForMonth = this.getOrdersForMonth.bind(this);
-    this.onMonthChange = this.onMonthChange.bind(this);
+    this.getOrderData = this.getOrderData.bind(this);
+    this.selectMonth = this.selectMonth.bind(this);
     this.selectYear = this.selectYear.bind(this);
     this.onStoreChange = this.onStoreChange.bind(this);
     this.onOrderTypeChange = this.onOrderTypeChange.bind(this);
@@ -31,7 +34,30 @@ class CompletedOrders extends Component {
 
   componentDidMount() {
     this.getStores();
-    this.getOrdersForMonth(this.state.month, this.state.storeId);
+    this.getOrderData(this.state.month, this.state.year, this.state.storeId);
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log("next state", nextState, "this state", this.state);
+
+    if (this.state.orders.length > 0) {
+      if (this.state.orders.length !== nextState.orders.length) {
+        return true;
+      }
+      else {
+        if (this.state.month !== nextState.month) {
+          return false;
+        }
+        if (this.state.year !== nextState.year) {
+          return false;
+        }
+        if (this.state.storeId !== nextState.storeId) {
+          return false;
+        }
+      }
+    }
+    return true;
+
   }
 
   getStores() {
@@ -41,46 +67,53 @@ class CompletedOrders extends Component {
         return {"storeName": store.storeName, "storeId": store.storeId};
       });
       this.setState({ stores: storesData });
-      console.log("storeData ", storesData);
+      // console.log("storeData ", storesData);
     })
   }
 
-  getOrdersForMonth(month, storeId) {
-    if (storeId > 0) {
-      console.log("month", month, "storeId", storeId);
-      console.log(`${API_URL}/dispatch/stores/orders`, { auth: this.props.auth, storeId, month });
-      axios.post(`${API_URL}/dispatch/stores/orders`, { auth: this.props.auth, storeId, month })
+  getOrderData(month, year, storeId) {
+    this.setState({ loading: true });
+    console.log("month", month, "storeId", storeId);
+
+    if (parseInt(storeId) > 0) {
+      console.log(`${API_URL}/dispatch/stores/orders`, { auth: this.props.auth, storeId, month, year});
+      axios.post(`${API_URL}/dispatch/stores/orders`, { auth: this.props.auth, storeId, month, year })
         .then(({ data }) => {
           console.log("SPECIFIC STORE DATA: ", data);
-          this.setState({ orders: data, month: parseInt(month), storeId });
+          this.setState({ orders: data, month, storeId, loading: false });
         })
         .catch((err) => {
           console.log("Error: ", err);
+          this.setState({ loading: false });
         })
     }
     else {
-      axios.post(`${API_URL}/dispatch/orders/completed/month`, { auth: this.props.auth, month })
+      axios.post(`${API_URL}/dispatch/orders/completed/month`, { auth: this.props.auth, month, year })
       .then(({ data }) => {
-        // console.log(data);
-        this.setState({ orders: data, month, storeId });
+        console.log(data);
+        this.setState({ orders: data, month, storeId, loading: false });
       })
       .catch((err) => {
         console.log("Error: ", err);
+        this.setState({ loading: false });
       })
     }
   }
 
   formatData(orders) {
     // console.log("The Month: ", this.state.month);
-    const daysNum = new Date(this.state.year, this.state.month, 0).getDate();
+    const daysNum = new Date(this.state.year, this.state.month+1, 0).getDate();
     const days = [];
-    // console.log("daysNum Array: ", daysNum);
+    console.log("daysNum: ", daysNum, days);
 
     for (var i = 1; i <= daysNum; i++) { days.push(i) };
 
     const cleanData = days.map((day) => {
       const daysOrders = orders.filter((order) => {
-        if ( new Date(parseInt(order.orderCreatedAt)).getDate() === day) return true;
+        console.log("Month", new Date(parseInt(order.orderCreatedAt) + 420000).getMonth());
+        console.log("Day", new Date(parseInt(order.orderCreatedAt) + 420000).getDate());
+
+        if ( new Date(parseInt(order.orderCreatedAt) + 420000).getDate() === day) return true;
       });
 
       const total = daysOrders.reduce((curr, nextOrder) => {
@@ -93,22 +126,20 @@ class CompletedOrders extends Component {
     return cleanData;
   }
 
-  onMonthChange(event) {
-    this.getOrdersForMonth(event.target.value, this.state.storeId);
+  selectMonth(event) {
+    this.setState({ month: event.target.value });
   }
 
   selectYear(event){
-    // this.setState({ year: parseInt(e.target.value) });
-    this.getOrderData(this.state.month, e.target.value);
+    this.setState({ year: parseInt(event.target.value) });
   }
   onStoreChange(event) {
-    let storeId = event.target.value;
-    this.getOrdersForMonth(this.state.month, storeId);
+    // let storeId = event.target.value;
+    this.setState({ storeId: parseInt(event.target.value) });
   }
 
   onOrderTypeChange(event) {
     let orderType = event.target.value;
-    this.getOrdersForMonth(this.state.month, orderType);
   }
 
   render() {
@@ -122,19 +153,19 @@ class CompletedOrders extends Component {
             <option value="single">Single</option>
           </select>
 
-          <select onChange={this.onMonthChange} value={this.state.month}>
-            <option value={1}>January</option>
-            <option value={2}>February</option>
-            <option value={3}>March</option>
-            <option value={4}>April</option>
-            <option value={5}>May</option>
-            <option value={6}>June</option>
-            <option value={7}>July</option>
-            <option value={8}>August</option>
-            <option value={9}>September</option>
-            <option value={10}>October</option>
-            <option value={11}>November</option>
-            <option value={12}>December</option>
+          <select onChange={this.selectMonth} value={this.state.month}>
+            <option value={0}>January</option>
+            <option value={1}>February</option>
+            <option value={2}>March</option>
+            <option value={3}>April</option>
+            <option value={4}>May</option>
+            <option value={5}>June</option>
+            <option value={6}>July</option>
+            <option value={7}>August</option>
+            <option value={8}>September</option>
+            <option value={9}>October</option>
+            <option value={10}>November</option>
+            <option value={11}>December</option>
           </select>
 
           <select style={style.select} onChange={this.selectYear} value={this.state.year}>
@@ -152,12 +183,16 @@ class CompletedOrders extends Component {
             {this.state.stores.map(store => {
               return <option key={store.storeId} value={store.storeId}>{store.storeName}</option>
             })}
-
           </select>
 
-          <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="orders" color="#7830ee" />
-          <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="total" color="#29cb56" />
+          <button onClick={() => this.getOrderData(this.state.month, this.state.year, this.state.storeId)}>Submit</button>
 
+          {this.state.loading ? <span>Loading...</span> :
+            <div>
+              <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="orders" color="#7830ee" />
+              <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="total" color="#29cb56" />
+            </div>
+          }
           {this.state.orders.length === 0
           ? <span style={subContainer}>
               <h1 style={title}>No Completed Orders Today</h1>
