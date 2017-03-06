@@ -187,18 +187,20 @@ class CompletedOrders extends Component {
           </select>
 
           <button onClick={() => this.getOrderData(this.state.month, this.state.year, this.state.storeId)}>Submit</button>
-          
-          {this.state.loading ? <span>Loading...</span> :
+
+          {this.state.loading ? <span>Loading...</span> : null}
+
+          {!this.state.loading && this.state.orders.length > 0 ?
             <div>
               <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="orders" color="#7830ee" />
               <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="total" color="#29cb56" />
+              <CompletedOrdersList orders={this.state.orders} />
             </div>
-          }
-          {this.state.orders.length === 0
-          ? <span style={subContainer}>
-              <h1 style={title}>No Completed Orders Today</h1>
-            </span>
-          : <CompletedOrdersList orders={this.state.orders} /> }
+          : null }
+          {!this.state.loading && this.state.orders.length === 0 ?
+            <span style={subContainer}>
+              <h1 style={title}>No Completed Orders For This Period</h1>
+            </span> : null }
         </section>
       </div>
     );
