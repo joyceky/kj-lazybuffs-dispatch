@@ -149,8 +149,9 @@ class CompletedOrders extends Component {
   calcRevenue(orders){
       return orders
       .reduce((curr, nextOrder) => {
-        return curr + parseFloat(nextOrder.orderSubTotal);
-      }, 0).toFixed(2);
+        let sub = (parseFloat(curr) + parseFloat(nextOrder.orderSubTotal)).toFixed(2);
+        return parseFloat(sub) || 0.00;
+      }, 0);
   }
 
   render() {
