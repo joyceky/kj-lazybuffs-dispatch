@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-// import ListItemCollapsed from './ListItemCollapsed';
-// import ListItemExpanded from './ListItemExpanded';
 
 class InvoiceOrder extends Component {
 render() {
@@ -10,23 +8,22 @@ render() {
 
     return (
         <tr>
-          {this.props.order.orders > 0 ?
-            <div>
-              <td>{date}</td>
-              <td>{this.props.order.orders} at $2.50</td>
-              <td>Fee Total: {(this.props.order.orders * 2.50).toFixed(2)}</td>
-              <td>Percentage Total: {(this.props.order.total * 0.05).toFixed(2)}</td>
-            </div>
-          : null}
+          {/* {this.props.order.orders > 0 ? */}
+              <td style={style.tableData}>{date}</td>
+              <td style={style.tableData}>
+                <strong>Phone Delivery Orders</strong>
+                <br></br>
+                {this.props.order.orders} @ $2.50</td>
+              <td style={style.tableData}>${(this.props.order.orders * 2.50).toFixed(2)}</td>
+          {/* : null} */}
         </tr>
     );
+  }
+}
 
-    const styles = {
-      width: '100%',
-      borderBottom: '1px solid lightgrey',
-      pading: '0',
-      margin: '0',
-    };
+const style = {
+  tableData: {
+    paddingBottom: '3px'
   }
 }
 

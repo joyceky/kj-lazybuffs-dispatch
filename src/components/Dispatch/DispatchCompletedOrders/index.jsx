@@ -56,7 +56,6 @@ class CompletedOrders extends Component {
       }
     }
     return true;
-
   }
 
   getStores() {
