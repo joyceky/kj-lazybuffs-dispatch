@@ -211,6 +211,7 @@ class CompletedOrders extends Component {
                 <div>
                   <p>Order Analytics</p>
                   <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="orders" color="#7830ee" />
+                  <p>{`Orders for ${months[this.state.month]} ${this.state.year}: ${ this.state.orders.length }`}</p>
 
                   <p>Revenue Analytics</p>
                   <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="total" color="#29cb56" />
