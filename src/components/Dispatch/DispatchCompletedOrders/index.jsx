@@ -22,6 +22,7 @@ class CompletedOrders extends Component {
       storeName: 'All Stores',
       // orderType: "all",
       loading: false,
+      showInvoice: false
     };
 
     this.getStores = this.getStores.bind(this);
@@ -31,6 +32,7 @@ class CompletedOrders extends Component {
     this.onStoreChange = this.onStoreChange.bind(this);
     // this.onOrderTypeChange = this.onOrderTypeChange.bind(this);
     this.formatData = this.formatData.bind(this);
+    this.toggleInvoice = this.toggleInvoice.bind(this);
   }
 
   componentDidMount() {
@@ -44,7 +46,6 @@ class CompletedOrders extends Component {
       let storesData = data.map((store) => {
         return {"storeName": store.storeName, "storeId": store.storeId};
       });
-      // console.log("STORE DATA :", storesData);
       this.setState({ stores: storesData });
     })
   }
@@ -56,7 +57,6 @@ class CompletedOrders extends Component {
       console.log(`${API_URL}/dispatch/stores/orders`, { auth: this.props.auth, storeId, month, year});
       axios.post(`${API_URL}/dispatch/stores/orders`, { auth: this.props.auth, storeId, month, year })
         .then(({ data }) => {
-          // console.log("SPECIFIC STORE DATA: ", data);
           this.setState({ orders: data, month, storeId, loading: false, shouldChartsBeVisible: true });
         })
         .catch((err) => {
@@ -67,7 +67,6 @@ class CompletedOrders extends Component {
     else {
       axios.post(`${API_URL}/dispatch/orders/completed/month`, { auth: this.props.auth, month, year })
       .then(({ data }) => {
-        // console.log("ALL STORE DATA: ", data);
         this.setState({ orders: data, month, year, storeId, loading: false, shouldChartsBeVisible: true });
       })
       .catch((err) => {
@@ -139,6 +138,15 @@ class CompletedOrders extends Component {
       }, 0);
   }
 
+  toggleInvoice(){
+    if (this.state.showInvoice == true) {
+      this.setState({ showInvoice: false })
+    }
+    else {
+      this.setState({ showInvoice: true })
+    }
+  }
+
   render() {
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -152,6 +160,7 @@ class CompletedOrders extends Component {
 
         <section style={style.header}>
           <section>
+            <span>Select a month, year, or store to view analytics:</span>
               {/*<select style={style.select} onChange={this.onOrderTypeChange} >
              <option value="all">All</option>
               <option value="multi">Multi</option>
@@ -183,8 +192,6 @@ class CompletedOrders extends Component {
                 })
               }
             </select>
-
-            <button style={style.btn} onClick={() => this.getOrderData(this.state.month, this.state.year, this.state.storeId)}>View Analytics</button>
           </section>
         </section>
 
@@ -209,8 +216,10 @@ class CompletedOrders extends Component {
                 </div>
               </section>
               <section>
-                  {/* <CompletedOrdersList orders={this.state.orders} /> */}
-                  <InvoiceComponent orders={this.formatData(this.state.orders)} month={this.state.month} year={this.state.year} storeName={this.state.storeName}/>
+                <button style={style.btn} onClick={() => this.toggleInvoice()}>Generate Invoice</button>
+                { this.state.showInvoice ?
+                <InvoiceComponent orders={this.formatData(this.state.orders)} month={this.state.month} year={this.state.year} storeName={this.state.storeName}/>
+                : null }
               </section>
             </div>
             : null
@@ -243,13 +252,12 @@ const style = {
   },
   btn: {
     borderRadius: '5px',
+    display: 'block',
     padding: '8px 10px',
     fontSize: '22px',
     textDecoration: 'none',
-    margin: '20px',
     color: '#fff',
-    position: 'relative',
-    display: 'inline-block',
+    margin: '25px auto',
     backgroundColor: '#55acee',
     boxShadow: '0px 5px 0px 0px #3C93D5',
     fontSize: '18px'

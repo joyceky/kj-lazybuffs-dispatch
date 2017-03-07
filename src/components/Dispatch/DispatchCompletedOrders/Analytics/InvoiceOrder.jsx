@@ -8,14 +8,12 @@ render() {
 
     return (
         <tr>
-          {/* {this.props.order.orders > 0 ? */}
               <td style={style.tableData}>{date}</td>
               <td style={style.tableData}>
                 <span style={{fontWeight: 'bold', fontSize: '18px'}}>Phone Delivery Orders</span>
                 <br></br>
                 {this.props.order.orders} @ $2.50</td>
               <td style={style.tableData}>${(this.props.order.orders * 2.50).toFixed(2)}</td>
-          {/* : null} */}
         </tr>
     );
   }
