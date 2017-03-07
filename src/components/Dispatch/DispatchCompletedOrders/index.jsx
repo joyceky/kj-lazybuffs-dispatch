@@ -21,7 +21,6 @@ class CompletedOrders extends Component {
       stores: [],
       // orderType: "all",
       loading: false,
-      // cleanData: []
     };
 
     this.getStores = this.getStores.bind(this);
@@ -36,26 +35,6 @@ class CompletedOrders extends Component {
   componentDidMount() {
     this.getStores();
     this.getOrderData(this.state.month, this.state.year, this.state.storeId);
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    if (this.state.orders.length > 0) {
-      if (this.state.orders.length !== nextState.orders.length) {
-        return true;
-      }
-      else {
-        if (this.state.month !== nextState.month) {
-          return false;
-        }
-        if (this.state.year !== nextState.year) {
-          return false;
-        }
-        if (this.state.storeId !== nextState.storeId) {
-          return false;
-        }
-      }
-    }
-    return true;
   }
 
   getStores() {
@@ -76,7 +55,7 @@ class CompletedOrders extends Component {
       axios.post(`${API_URL}/dispatch/stores/orders`, { auth: this.props.auth, storeId, month, year })
         .then(({ data }) => {
           // console.log("SPECIFIC STORE DATA: ", data);
-          this.setState({ orders: data, month, storeId, loading: false });
+          this.setState({ orders: data, month, storeId, loading: false, shouldChartsBeVisible: true });
         })
         .catch((err) => {
           console.log("Error: ", err);
@@ -87,18 +66,17 @@ class CompletedOrders extends Component {
       axios.post(`${API_URL}/dispatch/orders/completed/month`, { auth: this.props.auth, month, year })
       .then(({ data }) => {
         // console.log("ALL STORE DATA: ", data);
-        this.setState({ orders: data, month, storeId, loading: false });
+        this.setState({ orders: data, month, year, storeId, loading: false, shouldChartsBeVisible: true });
       })
       .catch((err) => {
         console.log("Error: ", err);
-        this.setState({ loading: false });
+        this.setState({ orders: data, month, year, storeId, loading: false, shouldChartsBeVisible: true });
       })
     }
   }
 
   formatData(orders) {
     const daysNum = new Date(this.state.year, this.state.month+1, 0).getDate();
-    // console.log("DAYSNUM", daysNum);
     const days = [];
 
     for (var i = 1; i <= daysNum; i++) { days.push(i) };
@@ -106,14 +84,7 @@ class CompletedOrders extends Component {
     const cleanData = days.map((day) => {
       const daysOrders = orders.filter((order) => {
         let date = new Date(parseInt(order.orderCreatedAt));
-        // if (parseInt(date.getMonth()) != parseInt(this.state.month)) {
-        //   // let num = date.getMonth();
-        //   // console.log("MONTH DIFFERENCE");
-        //   // console.log("Month", date.getMonth(), typeof num);
-        //   // console.log("State month", this.state.month, typeof this.state.month);
-        //   return false;
-        // }
-        // else
+
         if ( date.getDate() == day && date.getMonth() == this.state.month) {
           return true;
         }
@@ -131,15 +102,25 @@ class CompletedOrders extends Component {
   }
 
   selectMonth(event) {
-    this.setState({ month: event.target.value });
+    let month = event.target.value;
+    this.setState({ month });
+    this.getOrderData(month, this.state.year, this.state.storeId);
+
   }
 
   selectYear(event){
-    this.setState({ year: parseInt(event.target.value) });
+    let year = event.target.value;
+    this.setState({ year });
+    this.getOrderData(this.state.month, year, this.state.storeId);
+    // this.setState({ year: parseInt(event.target.value) });
   }
 
   onStoreChange(event) {
-    this.setState({ storeId: parseInt(event.target.value) });
+    let storeId = event.target.value;
+    this.setState({ storeId });
+    this.getOrderData(this.state.month, this.state.year, storeId);
+
+    // this.setState({ storeId: parseInt(event.target.value) });
   }
 
   // onOrderTypeChange(event) {
@@ -176,7 +157,7 @@ class CompletedOrders extends Component {
             <select style={style.select} onChange={this.selectMonth} value={this.state.month}>
               {
                 months.map((monthVal, i) => {
-                  return <option value={i}>{monthVal}</option>
+                  return <option value={i} key={i}>{monthVal}</option>
                 })
               }
             </select>

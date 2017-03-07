@@ -8,12 +8,25 @@ class InvoiceComponent extends Component {
   render() {
 
     console.log("order", this.props.orders);
+    const today = new Date();
+    const dateString = `${today.getMonth()+1}/${today.getDate()}/${today.getFullYear()}`;
 
     return (
       <div>
         <section style={style.invoiceHeader}>
-            <div>INVOICE</div>
-            <span>Bill to STORE NAME</span>
+          <div style={{float: 'left'}}>
+            INVOICE
+            <br></br>
+            Bill to STORE NAME
+          </div>
+          <div style={{float: 'right'}}>
+            INVOICE NUMER
+            <br></br>
+            {dateString}
+            <br></br>
+            DUE DATE
+          </div>
+
         </section>
         <table style={style.table}>
           <thead style={style.tableHead}>
@@ -48,6 +61,13 @@ const listSortBy = {
 };
 
 const style = {
+  invoiceHeader: {
+    width: '80%',
+    margin: '0 auto',
+    height: '100px',
+    backgroundColor: 'blue'
+
+  },
   table: {
     width: '80%',
     border: '1px solid #868686',
@@ -60,9 +80,6 @@ const style = {
     height: '20px',
     textAlign: 'left',
     fontSize: '18px'
-  },
-  indexHeader: {
-    width: '80%'
   }
 }
 
