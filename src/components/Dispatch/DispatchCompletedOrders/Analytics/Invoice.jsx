@@ -17,7 +17,7 @@ class InvoiceComponent extends Component {
           <div style={{float: 'left'}}>
             INVOICE
             <br></br>
-            Bill to STORE NAME
+            Bill to {this.props.storeName}
           </div>
           <div style={{float: 'right'}}>
             INVOICE NUMER

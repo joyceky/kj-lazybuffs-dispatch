@@ -19,6 +19,7 @@ class CompletedOrders extends Component {
       year: today.getFullYear(),
       storeId: 0,
       stores: [],
+      storeName: 'All Stores',
       // orderType: "all",
       loading: false,
     };
@@ -43,6 +44,7 @@ class CompletedOrders extends Component {
       let storesData = data.map((store) => {
         return {"storeName": store.storeName, "storeId": store.storeId};
       });
+      // console.log("STORE DATA :", storesData);
       this.setState({ stores: storesData });
     })
   }
@@ -105,22 +107,24 @@ class CompletedOrders extends Component {
     let month = event.target.value;
     this.setState({ month });
     this.getOrderData(month, this.state.year, this.state.storeId);
-
   }
 
   selectYear(event){
     let year = event.target.value;
     this.setState({ year });
     this.getOrderData(this.state.month, year, this.state.storeId);
-    // this.setState({ year: parseInt(event.target.value) });
   }
 
   onStoreChange(event) {
     let storeId = event.target.value;
-    this.setState({ storeId });
+    let storeName = this.state.stores.filter((store) => {
+      if ( store.storeId == event.target.value) {
+        return true;
+      }
+    });
+    storeName = storeName[0].storeName;
+    this.setState({ storeId, storeName });
     this.getOrderData(this.state.month, this.state.year, storeId);
-
-    // this.setState({ storeId: parseInt(event.target.value) });
   }
 
   // onOrderTypeChange(event) {
@@ -175,7 +179,7 @@ class CompletedOrders extends Component {
               <option key={0} value={0}>All Stores</option>
               {
                 this.state.stores.map(store => {
-                  return <option key={store.storeId} value={store.storeId}>{store.storeName}</option>
+                  return <option key={store.storeName} value={store.storeId}>{store.storeName}</option>
                 })
               }
             </select>
@@ -206,7 +210,7 @@ class CompletedOrders extends Component {
               </section>
               <section>
                   {/* <CompletedOrdersList orders={this.state.orders} /> */}
-                  <InvoiceComponent orders={this.formatData(this.state.orders)} month={this.state.month} year={this.state.year}/>
+                  <InvoiceComponent orders={this.formatData(this.state.orders)} month={this.state.month} year={this.state.year} storeName={this.state.storeName}/>
               </section>
             </div>
             : null
