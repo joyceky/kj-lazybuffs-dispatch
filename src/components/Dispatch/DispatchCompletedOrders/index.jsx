@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import CompletedOrdersList from './CompletedOrdersList';
-import BarChartComponent from './Graphs/BarChart';
+import BarChartComponent from './Analytics/BarChart';
+import InvoiceComponent from './Analytics/Invoice';
 import axios from 'axios';
 import { API_URL } from '../../../actions';
 
@@ -19,7 +20,7 @@ class CompletedOrders extends Component {
       year: today.getFullYear(),
       storeId: 0,
       stores: [],
-      orderType: "all",
+      // orderType: "all",
       loading: false
     };
 
@@ -28,7 +29,7 @@ class CompletedOrders extends Component {
     this.selectMonth = this.selectMonth.bind(this);
     this.selectYear = this.selectYear.bind(this);
     this.onStoreChange = this.onStoreChange.bind(this);
-    this.onOrderTypeChange = this.onOrderTypeChange.bind(this);
+    // this.onOrderTypeChange = this.onOrderTypeChange.bind(this);
     this.formatData = this.formatData.bind(this);
   }
 
@@ -67,19 +68,17 @@ class CompletedOrders extends Component {
         return {"storeName": store.storeName, "storeId": store.storeId};
       });
       this.setState({ stores: storesData });
-      // console.log("storeData ", storesData);
     })
   }
 
   getOrderData(month, year, storeId) {
     this.setState({ loading: true });
-    console.log("month", month, "storeId", storeId);
 
     if (parseInt(storeId) > 0) {
       console.log(`${API_URL}/dispatch/stores/orders`, { auth: this.props.auth, storeId, month, year});
       axios.post(`${API_URL}/dispatch/stores/orders`, { auth: this.props.auth, storeId, month, year })
         .then(({ data }) => {
-          console.log("SPECIFIC STORE DATA: ", data);
+          // console.log("SPECIFIC STORE DATA: ", data);
           this.setState({ orders: data, month, storeId, loading: false });
         })
         .catch((err) => {
@@ -90,7 +89,7 @@ class CompletedOrders extends Component {
     else {
       axios.post(`${API_URL}/dispatch/orders/completed/month`, { auth: this.props.auth, month, year })
       .then(({ data }) => {
-        console.log(data);
+        // console.log("ALL STORE DATA: ", data);
         this.setState({ orders: data, month, storeId, loading: false });
       })
       .catch((err) => {
@@ -102,29 +101,32 @@ class CompletedOrders extends Component {
 
   formatData(orders) {
     const daysNum = new Date(this.state.year, this.state.month+1, 0).getDate();
+    console.log("DAYSNUM", daysNum);
     const days = [];
-    console.log("daysNum: ", daysNum, days);
 
     for (var i = 1; i <= daysNum; i++) { days.push(i) };
 
     const cleanData = days.map((day) => {
       const daysOrders = orders.filter((order) => {
-        let date = new Date(parseInt(order.orderCreatedAt)- 420000);
-        if ( date.getMonth() === 1) {
-          if (this.state.month !== 1) {
-            return false;
-          }
+        let date = new Date(parseInt(order.orderCreatedAt) - 420000);
+        if (parseInt(date.getMonth()) != this.state.month) {
+          // let num = date.getMonth();
+          // console.log("MONTH DIFFERENCE");
+          // console.log("Month", date.getMonth(), typeof num);
+          // console.log("State month", this.state.month, typeof this.state.month);
+          return false;
+
         }
-        if ( new Date(parseInt(order.orderCreatedAt) + 420000).getDate() === day) return true;
-      });
-
+        if ( new Date(parseInt(order.orderCreatedAt) - 420000).getDate() === day) return true;
+      })
       const total = daysOrders.reduce((curr, nextOrder) => {
-         return curr + parseFloat(nextOrder.orderSubTotal) ;
+          let sub = parseFloat(nextOrder.orderSubTotal).toFixed(2);
+          console.log(sub);
+          console.log(curr + sub, typeof curr, typeof sub);
+         return (parseFloat(curr) + parseFloat(sub)).toFixed(2);
       }, 0);
-
       return { date: day, total, orders: daysOrders.length };
     });
-
     return cleanData;
   }
 
@@ -135,18 +137,19 @@ class CompletedOrders extends Component {
   selectYear(event){
     this.setState({ year: parseInt(event.target.value) });
   }
+
   onStoreChange(event) {
     this.setState({ storeId: parseInt(event.target.value) });
   }
 
-  onOrderTypeChange(event) {
-    let orderType = event.target.value;
-  }
+  // onOrderTypeChange(event) {
+  //   let orderType = event.target.value;
+  // }
 
   calcRevenue(orders){
       return orders
-      .reduce((prev, curr) => {
-        return prev + parseFloat(curr.orderSubTotal);
+      .reduce((curr, nextOrder) => {
+        return curr + parseFloat(nextOrder.orderSubTotal);
       }, 0).toFixed(2);
   }
 
@@ -163,11 +166,11 @@ class CompletedOrders extends Component {
 
         <section style={style.header}>
           <section>
-            <select style={style.select} onChange={this.onOrderTypeChange} >
-              <option value="all">All</option>
+              {/*<select style={style.select} onChange={this.onOrderTypeChange} >
+             <option value="all">All</option>
               <option value="multi">Multi</option>
               <option value="single">Single</option>
-            </select>
+            </select>*/}
 
             <select style={style.select} onChange={this.selectMonth} value={this.state.month}>
               {
@@ -195,13 +198,13 @@ class CompletedOrders extends Component {
               }
             </select>
 
-            <button onClick={() => this.getOrderData(this.state.month, this.state.year, this.state.storeId)}>Submit</button>
+            <button style={style.btn} onClick={() => this.getOrderData(this.state.month, this.state.year, this.state.storeId)}>View Analytics</button>
           </section>
         </section>
 
           { this.state.loading ?
-            <span style={subContainer}>
-              <h1 style={title}>Loading analytics...</h1>
+            <span style={style.subContainer}>
+              <h1 style={style.title}>Loading analytics...</h1>
             </span>
             : null }
           {
@@ -209,7 +212,7 @@ class CompletedOrders extends Component {
             <div>
               <section style={style.chartContainer}>
                 <div>
-                  <p>Orders Analytics</p>
+                  <p>Order Analytics</p>
                   <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="orders" color="#7830ee" />
 
                   <p>Revenue Analytics</p>
@@ -226,8 +229,8 @@ class CompletedOrders extends Component {
           }
           {
             !this.state.loading && this.state.orders.length === 0 ?
-            <span style={subContainer}>
-              <h1 style={title}>No Completed Orders For This Period</h1>
+            <span style={style.subContainer}>
+              <h1 style={style.title}>No Completed Orders For This Period</h1>
             </span> : null
           }
           </section>
@@ -236,29 +239,44 @@ class CompletedOrders extends Component {
   }
 }
 
-const subContainer = {
-  display: 'flex',
-  width: '100%',
-  flexDirection: 'row',
-  justifyContent: 'center',
-};
-const title = {
-  fontSize: '20px',
-  margin: '16px',
-  padding: '0',
-};
-
 const style = {
+
   container: {
     marginTop: '50px',
     display: 'flex',
     flexDirection: 'column',
+    width: '100%'
+  },
+  subContainer: {
+    display: 'flex',
     width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center'
+  },
+  btn: {
+    borderRadius: '5px',
+    padding: '8px 10px',
+    fontSize: '22px',
+    textDecoration: 'none',
+    margin: '20px',
+    color: '#fff',
+    position: 'relative',
+    display: 'inline-block',
+    backgroundColor: '#55acee',
+    boxShadow: '0px 5px 0px 0px #3C93D5',
+    fontSize: '18px'
+  },
+  title: {
+    fontSize: '20px',
+    margin: '16px',
+    padding: '0',
   },
   select: {
-    height: '22px',
-    fontSize: '16px',
-    margin: '8px'
+    height: '35px',
+    fontSize: '18px',
+    margin: '8px',
+    backgroundColor: '#fff',
+    color: "#494b5c"
   },
   header: {
     padding: '16px',
@@ -270,6 +288,8 @@ const style = {
     fontSize: '20px'
   },
   chartContainer: {
+    maxWidth: '100%',
+    overflow: 'scroll',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
@@ -277,37 +297,6 @@ const style = {
     width: 'auto',
     fontSize: '20px',
     textAlign: 'center'
-  },
-  listStyle: {
-    listStyle: 'none',
-    margin: '0',
-    width: '100%',
-    padding: '0',
-  },
-  listSortBy: {
-    display: 'flex',
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    margin: '8px',
-  },
-  listSortByButton: {},
-  allOrdersTitle: {
-    margin: '0',
-    padding: '16px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderBottom: '2px solid lightgrey',
-  },
-  noOrdersTitle: {
-    fontSize: '20px',
-    margin: '0',
-    padding: '16px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   previewBanner: {
     top: '50px',
@@ -318,8 +307,8 @@ const style = {
     backgroundColor: '#414141',
     textAlign: 'center',
     color: '#FFB300',
-  },
-};
+  }
+}
 
 function mapStateToProps({ auth }) {
   return { auth };
