@@ -219,7 +219,8 @@ class CompletedOrders extends Component {
                 </div>
               </section>
               <section>
-                  <CompletedOrdersList orders={this.state.orders} />
+                  {/* <CompletedOrdersList orders={this.state.orders} /> */}
+                  <InvoiceComponent orders={this.state.orders} />
               </section>
             </div>
             : null
