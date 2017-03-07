@@ -120,10 +120,7 @@ class CompletedOrders extends Component {
         if ( new Date(parseInt(order.orderCreatedAt) - 420000).getDate() === day) return true;
       })
       const total = daysOrders.reduce((curr, nextOrder) => {
-          let sub = parseFloat(nextOrder.orderSubTotal).toFixed(2);
-          console.log(sub);
-          console.log(curr + sub, typeof curr, typeof sub);
-         return (parseFloat(curr) + parseFloat(sub)).toFixed(2);
+         return (parseFloat(curr) + parseFloat(nextOrder.orderSubTotal)).toFixed(2);
       }, 0);
       return { date: day, total, orders: daysOrders.length };
     });
