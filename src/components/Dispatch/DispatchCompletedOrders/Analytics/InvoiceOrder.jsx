@@ -7,20 +7,18 @@ class InvoiceOrder extends Component {
 render() {
 
     let date = `${this.props.month}/${this.props.order.date}/${this.props.year}`;
-    console.log(date);
 
     return (
-
-        <section style={styles}>
+        <tr>
           {this.props.order.orders > 0 ?
             <div>
-              <span>{date} | </span>
-              <span>{this.props.order.orders} at $2.50 | </span>
-              <span>Fee Total: {(this.props.order.orders * 2.50).toFixed(2)} | </span>
-              <span>Percentage Total: {(this.props.order.total * 0.05).toFixed(2)}</span>
+              <td>{date}</td>
+              <td>{this.props.order.orders} at $2.50</td>
+              <td>Fee Total: {(this.props.order.orders * 2.50).toFixed(2)}</td>
+              <td>Percentage Total: {(this.props.order.total * 0.05).toFixed(2)}</td>
             </div>
           : null}
-        </section>
+        </tr>
     );
 
     const styles = {

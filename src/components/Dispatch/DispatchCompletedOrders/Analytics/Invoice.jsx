@@ -43,12 +43,14 @@ class InvoiceComponent extends Component {
             <div>INVOICE</div>
             <span>Bill to STORE NAME</span>
         </section>
-        <section style={style.list}>
+        <table style={style.list}>
+          <tbody>
           {this.props.orders.length > 0 ?
             this.props.orders.map(order => {
             return <InvoiceOrder order={order} year={this.props.year} month={this.props.month} />
           }) : null}
-        </section>
+          </tbody>
+        </table>
       </div>
     );
   }

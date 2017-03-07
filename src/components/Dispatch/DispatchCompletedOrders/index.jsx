@@ -12,7 +12,6 @@ class CompletedOrders extends Component {
 
     const today = new Date(Date.now());
     const adjustedToday = today.getTimezoneOffset();
-    console.log("offset", adjustedToday);
 
     this.state = {
       orders: [],
@@ -40,8 +39,6 @@ class CompletedOrders extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    console.log("next state", nextState, "this state", this.state);
-
     if (this.state.orders.length > 0) {
       if (this.state.orders.length !== nextState.orders.length) {
         return true;
@@ -119,7 +116,6 @@ class CompletedOrders extends Component {
         // }
         // else
         if ( date.getDate() == day && date.getMonth() == this.state.month) {
-          console.log(date.getMonth(), this.state.month, date.getMonth() == this.state.month);
           return true;
         }
         else {
