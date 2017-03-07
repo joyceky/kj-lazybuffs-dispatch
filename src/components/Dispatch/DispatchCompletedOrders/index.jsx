@@ -21,7 +21,8 @@ class CompletedOrders extends Component {
       storeId: 0,
       stores: [],
       // orderType: "all",
-      loading: false
+      loading: false,
+      // cleanData: []
     };
 
     this.getStores = this.getStores.bind(this);
@@ -101,29 +102,30 @@ class CompletedOrders extends Component {
 
   formatData(orders) {
     const daysNum = new Date(this.state.year, this.state.month+1, 0).getDate();
-    console.log("DAYSNUM", daysNum);
+    // console.log("DAYSNUM", daysNum);
     const days = [];
 
     for (var i = 1; i <= daysNum; i++) { days.push(i) };
 
     const cleanData = days.map((day) => {
       const daysOrders = orders.filter((order) => {
-        let date = new Date(parseInt(order.orderCreatedAt) - 420000);
+        let date = new Date(parseInt(order.orderCreatedAt));
         if (parseInt(date.getMonth()) != this.state.month) {
-          // let num = date.getMonth();
+          let num = date.getMonth();
           // console.log("MONTH DIFFERENCE");
           // console.log("Month", date.getMonth(), typeof num);
           // console.log("State month", this.state.month, typeof this.state.month);
           return false;
-
         }
-        if ( new Date(parseInt(order.orderCreatedAt) - 420000).getDate() === day) return true;
+        else if ( new Date(parseInt(order.orderCreatedAt)).getDate() === day) return true;
       })
       const total = daysOrders.reduce((curr, nextOrder) => {
-         return (parseFloat(curr) + parseFloat(nextOrder.orderSubTotal)).toFixed(2);
+        let totalNum = (parseFloat(curr) + parseFloat(nextOrder.orderSubTotal)).toFixed(2);
+         return parseFloat(totalNum);
       }, 0);
       return { date: day, total, orders: daysOrders.length };
     });
+    // this.setState({ cleanData });
     return cleanData;
   }
 

@@ -34,11 +34,17 @@ import InvoiceOrder from './InvoiceOrder';
 class InvoiceComponent extends Component {
   render() {
     return (
-      <section style={style.list}>
-        {this.props.orders.map(order => {
-          return <InvoiceOrder order={order} key={`compl${order.orderId}`}/>
-        })}
-      </section>
+      <div>
+        <section style={style.invoiceHeader}>
+            <div>INVOICE</div>
+            <span>Bill to STORE NAME</span>
+        </section>
+        <section style={style.list}>
+          {this.props.orders.map(order => {
+            return <InvoiceOrder order={order} key={`compl${order.orderId}`}/>
+          })}
+        </section>
+      </div>
     );
   }
 }
@@ -58,6 +64,9 @@ const style = {
     margin: '0',
     padding: '0',
   },
+  indexHeader: {
+    width: '80%'
+  }
 }
 
 function mapStateToProps({ auth }) {
