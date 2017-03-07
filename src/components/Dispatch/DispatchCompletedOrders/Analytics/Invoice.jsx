@@ -99,7 +99,7 @@ const style = {
   table: {
     width: '80%',
     border: '1px solid #868686',
-    margin: '0 auto',
+    margin: '15px auto',
     borderCollapse: 'collapse',
   },
   tableHead: {
