@@ -65,9 +65,13 @@ class InvoiceComponent extends Component {
             ])
           }) : null}
           </tbody>
-          <tfoot>
-            {totalBalance}
-          </tfoot>
+          <tfoot style={style.tableFoot}>
+            <tr>
+                <td></td>
+                <td>Balance Due:</td>
+                <td>${totalBalance}</td>
+            </tr>
+        </tfoot>
         </table>
       </div>
     );
@@ -85,12 +89,12 @@ const listSortBy = {
 
 const style = {
   invoiceHeader: {
-    width: '67%',
+    width: '75%',
     margin: '0 auto',
     height: '100px',
-    fontSize: '20px',
+    fontSize: '22px',
     fontWeight: 'bold',
-    border: '1px solid #868686',
+    // border: '1px solid #868686',
   },
   table: {
     width: '80%',
@@ -104,6 +108,10 @@ const style = {
     height: '20px',
     textAlign: 'left',
     fontSize: '18px'
+  },
+  tableFoot: {
+    backgroundColor: '#b8bab8',
+    fontSize: '22px'
   }
 }
 
