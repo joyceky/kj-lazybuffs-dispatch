@@ -121,7 +121,8 @@ class CompletedOrders extends Component {
       })
       const total = daysOrders.reduce((curr, nextOrder) => {
         let totalNum = (parseFloat(curr) + parseFloat(nextOrder.orderSubTotal)).toFixed(2);
-         return parseFloat(totalNum);
+        console.log(totalNum);
+         return parseFloat(totalNum) || 0;
       }, 0);
       return { date: day, total, orders: daysOrders.length };
     });
