@@ -110,23 +110,28 @@ class CompletedOrders extends Component {
     const cleanData = days.map((day) => {
       const daysOrders = orders.filter((order) => {
         let date = new Date(parseInt(order.orderCreatedAt));
-        if (parseInt(date.getMonth()) != this.state.month) {
-          let num = date.getMonth();
-          // console.log("MONTH DIFFERENCE");
-          // console.log("Month", date.getMonth(), typeof num);
-          // console.log("State month", this.state.month, typeof this.state.month);
-          return false;
+        // if (parseInt(date.getMonth()) != parseInt(this.state.month)) {
+        //   // let num = date.getMonth();
+        //   // console.log("MONTH DIFFERENCE");
+        //   // console.log("Month", date.getMonth(), typeof num);
+        //   // console.log("State month", this.state.month, typeof this.state.month);
+        //   return false;
+        // }
+        // else
+        if ( date.getDate() == day && date.getMonth() == this.state.month) {
+          console.log(date.getMonth(), this.state.month, date.getMonth() == this.state.month);
+          return true;
         }
-        else if ( new Date(parseInt(order.orderCreatedAt)).getDate() === day) return true;
+        else {
+          return false
+        }
       })
       const total = daysOrders.reduce((curr, nextOrder) => {
         let totalNum = (parseFloat(curr) + parseFloat(nextOrder.orderSubTotal)).toFixed(2);
-        console.log(totalNum);
          return parseFloat(totalNum) || 0;
       }, 0);
       return { date: day, total, orders: daysOrders.length };
     });
-    // this.setState({ cleanData });
     return cleanData;
   }
 
@@ -225,7 +230,7 @@ class CompletedOrders extends Component {
               </section>
               <section>
                   {/* <CompletedOrdersList orders={this.state.orders} /> */}
-                  <InvoiceComponent orders={this.state.orders} />
+                  <InvoiceComponent orders={this.formatData(this.state.orders)} month={this.state.month} year={this.state.year}/>
               </section>
             </div>
             : null

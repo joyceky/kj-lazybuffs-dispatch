@@ -6,14 +6,20 @@ import { connect } from 'react-redux';
 class InvoiceOrder extends Component {
 render() {
 
-    let date = new Date(parseInt(this.props.order.orderCreatedAt) - 420000);
-    let dateString = `${date.getMonth()}/${date.getUTCDate()}/${date.getUTCFullYear()}`;
-    console.log();
+    let date = `${this.props.month}/${this.props.order.date}/${this.props.year}`;
+    console.log(date);
 
     return (
 
         <section style={styles}>
-          <span>{dateString}</span>
+          {this.props.order.orders > 0 ?
+            <div>
+              <span>{date} | </span>
+              <span>{this.props.order.orders} at $2.50 | </span>
+              <span>Fee Total: {(this.props.order.orders * 2.50).toFixed(2)} | </span>
+              <span>Percentage Total: {(this.props.order.total * 0.05).toFixed(2)}</span>
+            </div>
+          : null}
         </section>
     );
 

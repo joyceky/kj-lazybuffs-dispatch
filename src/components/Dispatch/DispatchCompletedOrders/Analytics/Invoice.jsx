@@ -32,7 +32,11 @@ import { connect } from 'react-redux';
 import InvoiceOrder from './InvoiceOrder';
 
 class InvoiceComponent extends Component {
+
   render() {
+
+    console.log("order", this.props.orders);
+
     return (
       <div>
         <section style={style.invoiceHeader}>
@@ -40,9 +44,10 @@ class InvoiceComponent extends Component {
             <span>Bill to STORE NAME</span>
         </section>
         <section style={style.list}>
-          {this.props.orders.map(order => {
-            return <InvoiceOrder order={order} key={`compl${order.orderId}`}/>
-          })}
+          {this.props.orders.length > 0 ?
+            this.props.orders.map(order => {
+            return <InvoiceOrder order={order} year={this.props.year} month={this.props.month} />
+          }) : null}
         </section>
       </div>
     );
