@@ -11,7 +11,7 @@ render() {
           {/* {this.props.order.orders > 0 ? */}
               <td style={style.tableData}>{date}</td>
               <td style={style.tableData}>
-                <strong>Phone Delivery Orders</strong>
+                <em>Phone Delivery Orders</em>
                 <br></br>
                 {this.props.order.orders} @ $2.50</td>
               <td style={style.tableData}>${(this.props.order.orders * 2.50).toFixed(2)}</td>
@@ -23,7 +23,7 @@ render() {
 
 const style = {
   tableData: {
-    paddingBottom: '3px'
+    padding: '2px 5px 5px 2px'
   }
 }
 

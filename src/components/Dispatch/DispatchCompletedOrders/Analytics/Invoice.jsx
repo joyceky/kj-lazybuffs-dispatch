@@ -52,13 +52,14 @@ const style = {
     width: '80%',
     border: '1px solid #868686',
     margin: '0 auto',
-    borderCollapse: 'collapse'
+    borderCollapse: 'collapse',
   },
   tableHead: {
     backgroundColor: '#b8bab8',
     width: '100%',
     height: '20px',
-    textAlign: 'left'
+    textAlign: 'left',
+    fontSize: '18px'
   },
   indexHeader: {
     width: '80%'

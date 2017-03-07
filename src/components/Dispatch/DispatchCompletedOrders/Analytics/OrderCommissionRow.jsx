@@ -10,9 +10,9 @@ render() {
         <tr>
           <td style={style.tableData}>{date}</td>
           <td style={style.tableData}>
-            <span style={style.commission}>Phone Delivery Orders: Phone Order Commission</span>
+            <em>Phone Delivery Orders: Phone Order Commission</em>
             <br></br>
-              {this.props.order.total} @ 5%
+              ${this.props.order.total} @ 5%
           </td>
           <td style={style.tableData}>${(this.props.order.total * 0.05).toFixed(2)}</td>
         </tr>
@@ -22,10 +22,10 @@ render() {
 
 const style = {
   tableData: {
-    paddingBottom: '5px'
+    padding: '2px 5px 5px 2px'
   },
   commission: {
-    fontWeight: '500'
+    fontWeight: 'bold'
   }
 }
 
