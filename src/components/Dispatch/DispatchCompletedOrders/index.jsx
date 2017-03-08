@@ -162,7 +162,7 @@ class CompletedOrders extends Component {
 
   sendInvoice() {
      let table = document.getElementsByClassName('invoice');
-     console.log(table[0].innerHTML);
+     
      axios.post(`${API_URL}/new-invoice`, { table: table[0].innerHTML, storeName: this.state.storeName })
      .then((data) => {
        console.log(data);
