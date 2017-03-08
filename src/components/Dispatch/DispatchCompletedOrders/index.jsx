@@ -154,18 +154,14 @@ class CompletedOrders extends Component {
       <div>
         <section style={style.container}>
 
-        <section style={style.previewBanner}>
-          ANALYTICS BETA
-        </section>
-
         <section style={style.header}>
-          <section>
             <span>Select a month, year, or store to view analytics:</span>
               {/*<select style={style.select} onChange={this.onOrderTypeChange} >
              <option value="all">All</option>
               <option value="multi">Multi</option>
               <option value="single">Single</option>
             </select>*/}
+
 
             <select style={style.select} onChange={this.selectMonth} value={this.state.month}>
               {
@@ -178,8 +174,8 @@ class CompletedOrders extends Component {
             <select style={style.select} onChange={this.selectYear} value={this.state.year}>
               {
                 [2014,2015,2016,2017]
-                .map((year) => {
-                  return <option value={year}>{year}</option>
+                .map((year, i) => {
+                  return <option key={i} value={year}>{year}</option>
                 })
               }
             </select>
@@ -192,45 +188,45 @@ class CompletedOrders extends Component {
                 })
               }
             </select>
-          </section>
+
+            <button className='generate-invoice-button' style={style.btn} onClick={() => this.toggleInvoice()}>Generate Invoice</button>
+
         </section>
+        <p>{`Revenue for ${months[this.state.month]} ${this.state.year}: $${ (this.calcRevenue(this.state.orders)).toFixed(2)}`}</p>
+        <p>{`Orders for ${months[this.state.month]} ${this.state.year}: ${ this.state.orders.length }`}</p>
 
           { this.state.loading ?
             <span style={style.subContainer}>
               <h1 style={style.title}>Loading analytics...</h1>
             </span>
             : null }
+
+            { this.state.showInvoice ?
+            <InvoiceComponent orders={this.formatData(this.state.orders)} month={this.state.month} year={this.state.year} storeName={this.state.storeName}/>
+            : null }
+
           {
             !this.state.loading && this.state.orders.length > 0 ?
             <div>
               <section style={style.chartContainer}>
                 <div>
+                  {
+                    !this.state.loading && this.state.orders.length === 0 ?
+                    <span style={style.subContainer}>
+                      <h1 style={style.title}>No Completed Orders For This Period</h1>
+                    </span> : null
+                  }
                   <p>Order Analytics</p>
-                  <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="orders" color="#7830ee" />
-                  <p>{`Orders for ${months[this.state.month]} ${this.state.year}: ${ this.state.orders.length }`}</p>
+                  <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="orders" color="#CFB87C" />
 
                   <p>Revenue Analytics</p>
-                  <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="total" color="#29cb56" />
-
-                  <p>{`Revenue for ${months[this.state.month]} ${this.state.year}: $${ this.calcRevenue(this.state.orders)}`}</p>
+                  <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="total" color="#A2A4A3" />
                 </div>
-              </section>
-              <section>
-                <button style={style.btn} onClick={() => this.toggleInvoice()}>Generate Invoice</button>
-                { this.state.showInvoice ?
-                <InvoiceComponent orders={this.formatData(this.state.orders)} month={this.state.month} year={this.state.year} storeName={this.state.storeName}/>
-                : null }
               </section>
             </div>
             : null
           }
-          {
-            !this.state.loading && this.state.orders.length === 0 ?
-            <span style={style.subContainer}>
-              <h1 style={style.title}>No Completed Orders For This Period</h1>
-            </span> : null
-          }
-          </section>
+        </section>
       </div>
     );
   }
@@ -258,8 +254,8 @@ const style = {
     textDecoration: 'none',
     color: '#fff',
     margin: '25px auto',
-    backgroundColor: '#55acee',
-    boxShadow: '0px 5px 0px 0px #3C93D5',
+    backgroundColor: 'black',
+    boxShadow: '0px 5px 0px 0px #565A5C',
     fontSize: '18px'
   },
   title: {
@@ -272,7 +268,7 @@ const style = {
     fontSize: '18px',
     margin: '8px',
     backgroundColor: '#fff',
-    color: "#494b5c"
+    color: "#565A5C"
   },
   header: {
     padding: '16px',
@@ -281,7 +277,10 @@ const style = {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
-    fontSize: '20px'
+    fontSize: '18px',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center'
   },
   chartContainer: {
     maxWidth: '100%',

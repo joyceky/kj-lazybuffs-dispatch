@@ -14,7 +14,7 @@ const NavButton = ({ iconName, style, linkLocation}) => {
         style={style.button}
         activeStyle={buttonStyle.buttonActive}
       >
-        <i className="material-icons" style={style.buttonIcon}>{iconName}</i>
+        <i className="material-icons nav-button">{iconName}</i>
       </Link>
     </button>
   )
@@ -55,18 +55,18 @@ class DispatchNav extends Component {
 }
 
 const navStyle = {
-  position: 'fixed',
   zIndex: '10',
+  position: 'fixed',
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-around',
-  background: '#292929',
+  background: 'black',
   width: '100vw',
   height: '50px',
   top: '0',
   left: '0',
-}
+};
 
 const buttonStyle = {
   button: {

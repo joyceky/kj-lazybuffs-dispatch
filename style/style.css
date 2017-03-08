@@ -28,6 +28,22 @@ button:hover{
   cursor: pointer;
 }
 
+.nav-button {
+  color: white;
+}
+
+.nav-button:hover {
+  color: #CFB87C;
+}
+
+.generate-invoice-button{
+  color: black;
+}
+
+.generate-invoice-button:hover{
+  color: #CFB87C;
+}
+
 .map-icon-unassigned{
   background-color: red;
   border-radius: 50%;

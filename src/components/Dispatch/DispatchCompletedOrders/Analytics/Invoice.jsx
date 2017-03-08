@@ -24,8 +24,6 @@ class InvoiceComponent extends Component {
   }
 
   render() {
-
-    console.log("order", this.props.orders);
     const today = new Date();
     const dateString = `${today.getMonth()+1}/${today.getDate()}/${today.getFullYear()}`;
     const totalBalance  = this.calcMonthTotal();
@@ -99,8 +97,9 @@ const style = {
   table: {
     width: '80%',
     border: '1px solid #868686',
-    margin: '15px auto',
+    margin: '8px auto',
     borderCollapse: 'collapse',
+    fontSize: '14px',
   },
   tableHead: {
     backgroundColor: '#b8bab8',
