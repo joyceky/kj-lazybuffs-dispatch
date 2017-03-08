@@ -76,7 +76,8 @@ class CompletedOrders extends Component {
   }
 
   formatData(orders) {
-    const daysNum = new Date(this.state.year, this.state.month+1, 0).getDate();
+    let month = parseInt(this.state.month)+1;
+    const daysNum = new Date(this.state.year, month, 0).getDate();
     const days = [];
 
     for (var i = 1; i <= daysNum; i++) { days.push(i) };
