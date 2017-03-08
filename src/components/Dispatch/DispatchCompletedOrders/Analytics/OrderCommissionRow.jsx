@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 
 class OrderCommissionRow extends Component {
 render() {
-
-    let date = `${this.props.month}/${this.props.order.date}/${this.props.year}`;
+    let month = parseInt(this.props.month)+1;
+    let date = `${month}/${this.props.order.date}/${this.props.year}`;
 
     return (
         <tr>

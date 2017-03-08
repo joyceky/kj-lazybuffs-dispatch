@@ -67,7 +67,7 @@ class InvoiceComponent extends Component {
             <tr>
                 <td></td>
                 <td>Balance Due:</td>
-                <td>${totalBalance.toFixed(2)}</td>
+                <td>${totalBalance}</td>
             </tr>
         </tfoot>
         </table>
