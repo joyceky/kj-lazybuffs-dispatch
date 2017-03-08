@@ -154,10 +154,6 @@ class CompletedOrders extends Component {
       <div>
         <section style={style.container}>
 
-        <section style={style.previewBanner}>
-          ANALYTICS BETA
-        </section>
-
         <section style={style.header}>
           <section>
             <span>Select a month, year, or store to view analytics:</span>
@@ -211,7 +207,6 @@ class CompletedOrders extends Component {
 
                   <p>Revenue Analytics</p>
                   <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="total" color="#29cb56" />
-
                   <p>{`Revenue for ${months[this.state.month]} ${this.state.year}: $${ this.calcRevenue(this.state.orders)}`}</p>
                 </div>
               </section>
@@ -237,7 +232,6 @@ class CompletedOrders extends Component {
 }
 
 const style = {
-
   container: {
     marginTop: '50px',
     display: 'flex',
@@ -293,16 +287,6 @@ const style = {
     width: 'auto',
     fontSize: '20px',
     textAlign: 'center'
-  },
-  previewBanner: {
-    top: '50px',
-    left: '0',
-    width: '100%',
-    fontSize: '24px',
-    padding: '8px',
-    backgroundColor: '#414141',
-    textAlign: 'center',
-    color: '#FFB300',
   }
 }
 

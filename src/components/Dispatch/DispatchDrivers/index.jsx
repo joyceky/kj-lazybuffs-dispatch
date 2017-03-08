@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { loadDrivers, API_URL } from '../../../actions';
+import BarChartComponent from '../DispatchCompletedOrders/Analytics/BarChart';
 import axios from 'axios';
 
 const DateId = ({ orderId, createdAt }) => {
@@ -12,9 +13,9 @@ const DateId = ({ orderId, createdAt }) => {
   );
 };
 
-const stylePhone = (num) => {
-  return `${num.slice(0,3)}-${num.slice(3,6)}-${num.slice(6,10)}`;
-};
+// const stylePhone = (num) => {
+//   return `${num.slice(0,3)}-${num.slice(3,6)}-${num.slice(6,10)}`;
+// };
 
 class Driver extends Component {
   constructor(){
@@ -30,7 +31,8 @@ class Driver extends Component {
     this.getDriverOrderHistory = this.getDriverOrderHistory.bind(this);
     this.monthChange = this.monthChange.bind(this);
     this.yearChange = this.yearChange.bind(this);
-    this.genReport = this.genReport.bind(this);
+    this.getDriverOrders = this.getDriverOrders.bind(this);
+    this.formatData = this.formatData.bind(this);
   }
   componentDidMount() {
     this.getDriverOrderHistory(this.props.driverId);
@@ -49,12 +51,15 @@ class Driver extends Component {
     .catch(err => console.log(err));
   }
 
-  monthChange(e){
-    this.setState({ month: e.target.value });
+  monthChange(event){
+    let month = event.target.value;
+    // this.setState({ month: e.target.value });
+    this.getDriverOrders(this.state.driverId, month, this.state.year);
   }
 
-  yearChange(e){
-    this.setState({ year: e.target.value });
+  yearChange(event){
+    let year = event.target.value;
+    this.getDriverOrders(this.state.driverId, this.state.month, year);
   }
 
   getDeliveriesTotal(day){
@@ -90,13 +95,46 @@ class Driver extends Component {
     return daysOrders;
   }
 
-  genReport(){
+  getDriverOrders(driverId, month, year){
     axios.post(`${API_URL}/dispatch/driver/gen-report`, {
-      driverId: this.props.driverId,
-      month: this.state.month,
+      driverId: driverId,
+      month: month,
       year: this.state.year,
     })
-    .then(({ data }) => this.setState({ orderHistory: data, reportActive: true }))
+    .then(({ data }) => {
+      this.setState({ orderHistory: data, month, year, reportActive: true });
+      console.log("Driver Data: ", data);
+    })
+    .catch((err) => {
+      this.setState({ orderHistory: data, month, year, reportActive: true });
+      console.log(err);
+    })
+  }
+
+  formatData(orders) {
+    const daysNum = new Date(this.state.year, this.state.month+1, 0).getDate();
+    const days = [];
+
+    for (var i = 1; i <= daysNum; i++) { days.push(i) };
+
+    const cleanData = days.map((day) => {
+      const daysOrders = orders.filter((order) => {
+        let date = new Date(parseInt(order.orderCreatedAt));
+
+        if ( date.getDate() == day && date.getMonth() == this.state.month) {
+          return true;
+        }
+        else {
+          return false
+        }
+      })
+      const tip = daysOrders.reduce((curr, nextOrder) => {
+        let totalNum = (parseFloat(curr) + parseFloat(nextOrder.orderTip)).toFixed(2);
+         return parseFloat(totalNum) || 0;
+      }, 0);
+      return { date: day, tip, orders: daysOrders.length };
+    });
+    return cleanData;
   }
 
   render() {
@@ -106,13 +144,13 @@ class Driver extends Component {
 
         <section>
           <label>From
-            <select onChange={this.monthChange} value={this.state.month}>
+            <select style={style.select}  onChange={this.monthChange} value={this.state.month}>
               {
                 ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
                 .map((month, i) => <option key={month} value={i}>{month}</option>)
               }
             </select>
-            <select onChange={this.yearChange} value={this.state.year}>
+            <select style={style.select} onChange={this.yearChange} value={this.state.year}>
               {
                 [2014, 2015, 2016, 2017]
                 .map((year) => <option key={year} value={year}>{year}</option>)
@@ -120,9 +158,18 @@ class Driver extends Component {
             </select>
           </label>
 
-          <button onClick={this.genReport}>Generate Report</button>
+          <button onClick={this.getDriverOrders(this.state.driverId, this.state.month, this.state.year)}>Generate Report</button>
         </section>
-
+        <section style={style.chartContainer}>
+          <div>
+            <section>
+              <p>Order Analytics</p>
+              <BarChartComponent orders={this.formatData(this.state.orderHistory)} dataKey="orders" color="#7830ee" />
+              <p>Revenue Analytics</p>
+              <BarChartComponent orders={this.formatData(this.state.orderHistory)} dataKey="tip" color="#29cb56" />
+            </section>
+          </div>
+        </section>
       <article>
         <h1>Active Orders Right Now:</h1>
         <p>
@@ -184,51 +231,109 @@ class DispatchDrivers extends Component {
 
   render() {
     return (
-      <section style={style.container}>
-        <h1>Drivers</h1>
-        <select onChange={this.handleDriverSelect}>
-          {this.props.dispatchDrivers
-            .filter((driver) => {
-              if (driver.driverStatus === 'available') return true;
-              return false;
-            })
-            .map((driver) => {
-              return (
-                <option value={driver.driverId} key={driver.driverId}>
-                  {driver.driverName}
-                </option>
-              );
-            })
-          }
-        </select>
-        <Driver driverId={this.state.activeDriverId} />
+      <section>
+        <section style={style.container}>
+          <span>Driver:
+            <select style={style.select, style.driverSelect} onChange={this.handleDriverSelect}>
+              {this.props.dispatchDrivers
+                .filter((driver) => {
+                  if (driver.driverStatus === 'available') return true;
+                  return false;
+                })
+                .map((driver) => {
+                  return (
+                    <option value={driver.driverId} key={driver.driverId}>
+                      {driver.driverName}
+                    </option>
+                  );
+                })
+              }
+            </select>
+          </span>
+          <Driver driverId={this.state.activeDriverId} />
+        </section>
       </section>
-    )
+    );
   }
 }
 
 const style = {
   container: {
-    top: '50px',
-    left: '0',
+    marginTop: '50px',
     display: 'flex',
     flexDirection: 'column',
-    width: '100%',
-    overflow: 'scroll',
+    width: '100%'
   },
-  buttonContainer: {
+  subContainer: {
+    display: 'flex',
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center'
+  },
+  btn: {
+    borderRadius: '5px',
+    display: 'block',
+    padding: '8px 10px',
+    fontSize: '22px',
+    textDecoration: 'none',
+    color: '#fff',
+    margin: '25px auto',
+    backgroundColor: '#55acee',
+    boxShadow: '0px 5px 0px 0px #3C93D5',
+    fontSize: '18px'
+  },
+  title: {
+    fontSize: '20px',
+    margin: '16px',
+    padding: '0',
+  },
+  select: {
+    height: '35px',
+    fontSize: '18px',
+    margin: '8px',
+    backgroundColor: '#fff',
+    color: "#494b5c"
+  },
+  header: {
+    padding: '16px',
+    width: '100%',
+    boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    fontSize: '20px'
   },
-  button: {
+  driverSelect: {
+    height: '35px',
+    fontSize: '18px',
+    margin: '8px',
+    backgroundColor: '#fff',
+    color: "#494b5c",
+    width: '200px'
+  },
+  chartContainer: {
+    maxWidth: '100%',
+    overflow: 'scroll',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    height: 'auto',
+    width: 'auto',
     fontSize: '20px',
+    textAlign: 'center'
+  },
+  previewBanner: {
+    top: '50px',
+    left: '0',
+    width: '100%',
+    fontSize: '24px',
     padding: '8px',
-    color: 'rgb(0,0,0,0.7)',
+    backgroundColor: '#414141',
+    textAlign: 'center',
+    color: '#FFB300',
   }
-};
+}
+
 
 function mapStateToProps({ auth, dispatchDrivers }) {
   return { auth, dispatchDrivers };

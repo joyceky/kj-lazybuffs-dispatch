@@ -6,7 +6,7 @@ const BarChartComponent = ({orders, dataKey, color}) => {
   return (
       <div style={barChartStyle}>
         <BarChart width={1050} height={450} data={orders}>
-          <XAxis dataKey="date" stroke="#8884d8" />
+          <XAxis dataKey="date" stroke="#000000" />
           <YAxis />
           <Tooltip />
           <CartesianGrid stroke="#d6d6d6" strokeDasharray="4 4" />
