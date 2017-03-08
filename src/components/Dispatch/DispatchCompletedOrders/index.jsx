@@ -64,6 +64,7 @@ class CompletedOrders extends Component {
     else {
       axios.post(`${API_URL}/dispatch/orders/completed/month`, { auth: this.props.auth, month, year })
       .then(({ data }) => {
+        console.log(data);
         this.setState({ orders: data, month, year, storeId, loading: false, shouldChartsBeVisible: true });
       })
       .catch((err) => {
@@ -91,11 +92,24 @@ class CompletedOrders extends Component {
           return false
         }
       })
+      const tips = daysOrders.reduce((curr, nextOrder) => {
+        let totalNum = (parseFloat(curr) + parseFloat(nextOrder.orderTip)).toFixed(2);
+         return parseFloat(totalNum) || 0;
+      }, 0);
+      const totalWaitTime = daysOrders.reduce((curr, nextOrder) => {
+        let time = (nextOrder.orderCompletedAt - nextOrder.orderCreatedAt) / 60000;
+        let totalNum = (parseFloat(curr) + parseFloat(time)).toFixed(2);
+         return parseFloat(totalNum) || 0;
+      }, 0);
       const total = daysOrders.reduce((curr, nextOrder) => {
+        let totalNum = (parseFloat(curr) + parseFloat(nextOrder.orderSubTotal) + parseFloat(nextOrder.orderTax)).toFixed(2);
+         return parseFloat(totalNum) || 0;
+      }, 0);
+      const subtotal = daysOrders.reduce((curr, nextOrder) => {
         let totalNum = (parseFloat(curr) + parseFloat(nextOrder.orderSubTotal)).toFixed(2);
          return parseFloat(totalNum) || 0;
       }, 0);
-      return { date: day, total, orders: daysOrders.length };
+      return { date: day, total, tips, subtotal, totalWaitTime, orders: daysOrders.length };
     });
     return cleanData;
   }
@@ -148,7 +162,7 @@ class CompletedOrders extends Component {
   sendInvoice() {
      let table = document.getElementsByClassName('invoice');
      console.log(table[0].innerHTML);
-     axios.post(`${API_URL}/new-invoice`, { table: table[0].innerHTML })
+     axios.post(`${API_URL}/new-invoice`, { table: table[0].innerHTML, storeName: this.state.storeName })
      .then((data) => {
        console.log(data);
      })
@@ -237,6 +251,15 @@ class CompletedOrders extends Component {
 
                   <p>Revenue Analytics</p>
                   <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="total" color="#A2A4A3" />
+
+                  <p>Subtotal Analytics</p>
+                  <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="subtotal" color="#CFB87C" />
+
+                  <p>Tip Analytics</p>
+                  <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="tips" color="#A2A4A3" />
+
+                  <p>Wait Time Analytics</p>
+                  <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="totalWaitTime" color="#CFB87C" />
                 </div>
               </section>
             </div>
