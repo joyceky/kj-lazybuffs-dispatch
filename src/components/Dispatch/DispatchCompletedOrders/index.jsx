@@ -205,22 +205,24 @@ class CompletedOrders extends Component {
             <InvoiceComponent orders={this.formatData(this.state.orders)} month={this.state.month} year={this.state.year} storeName={this.state.storeName}/>
             : null }
 
-          {
-            !this.state.loading && this.state.orders.length > 0 ?
-            <div>
-              <section style={style.chartContainer}>
-                <div>
-                  {
-                    !this.state.loading && this.state.orders.length === 0 ?
-                    <span style={style.subContainer}>
-                      <h1 style={style.title}>No Completed Orders For This Period</h1>
-                    </span> : null
-                  }
+            {
+              !this.state.loading && this.state.orders.length === 0 ?
+              <span style={style.subContainer}>
+                <h1 style={style.title}>No Completed Orders For This Period</h1>
+              </span> : null
+            }
+
+            { !this.state.loading && this.state.orders.length > 0 ?
+              <div>
+                <section style={style.chartContainer}>
+                  <div>
+
                   <p>Order Analytics</p>
                   <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="orders" color="#CFB87C" />
 
                   <p>Revenue Analytics</p>
                   <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="total" color="#A2A4A3" />
+
                 </div>
               </section>
             </div>
