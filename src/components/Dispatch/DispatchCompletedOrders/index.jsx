@@ -64,7 +64,6 @@ class CompletedOrders extends Component {
     else {
       axios.post(`${API_URL}/dispatch/orders/completed/month`, { auth: this.props.auth, month, year })
       .then(({ data }) => {
-        console.log(data);
         this.setState({ orders: data, month, year, storeId, loading: false, shouldChartsBeVisible: true });
       })
       .catch((err) => {
@@ -98,9 +97,11 @@ class CompletedOrders extends Component {
       }, 0);
       const totalWaitTime = daysOrders.reduce((curr, nextOrder) => {
         let time = (nextOrder.orderCompletedAt - nextOrder.orderCreatedAt) / 60000;
+
         let totalNum = (parseFloat(curr) + parseFloat(time)).toFixed(2);
          return parseFloat(totalNum) || 0;
       }, 0);
+      // var averageWaitTime = parseFloat(totalWaitTime) / parseFloat(daysOrders.length);
       const total = daysOrders.reduce((curr, nextOrder) => {
         let totalNum = (parseFloat(curr) + parseFloat(nextOrder.orderSubTotal) + parseFloat(nextOrder.orderTax)).toFixed(2);
          return parseFloat(totalNum) || 0;
@@ -215,14 +216,11 @@ class CompletedOrders extends Component {
             }
           </section>
 
-
           <section>
             <p>{`Orders: ${ this.state.orders.length }`}</p>
             <p>{`Revenue: $${ (this.calcRevenue(this.state.orders)).toFixed(2) }`}</p>
           </section>
         </section>
-
-
 
           { this.state.loading ?
             <span style={style.subContainer}>
@@ -258,7 +256,7 @@ class CompletedOrders extends Component {
                   <p>Tip Analytics</p>
                   <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="tips" color="#A2A4A3" />
 
-                  <p>Wait Time Analytics</p>
+                  <p>Total Wait Time Analytics</p>
                   <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="totalWaitTime" color="#CFB87C" />
                 </div>
               </section>
