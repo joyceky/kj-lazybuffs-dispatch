@@ -11,7 +11,6 @@ class CompletedOrders extends Component {
     super();
 
     const today = new Date(Date.now());
-    const adjustedToday = today.getTimezoneOffset();
 
     this.state = {
       orders: [],
@@ -31,7 +30,6 @@ class CompletedOrders extends Component {
     this.selectYear = this.selectYear.bind(this);
     this.onStoreChange = this.onStoreChange.bind(this);
     // this.onOrderTypeChange = this.onOrderTypeChange.bind(this);
-    this.formatData = this.formatData.bind(this);
     this.toggleInvoice = this.toggleInvoice.bind(this);
   }
 
