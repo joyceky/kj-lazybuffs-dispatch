@@ -8,7 +8,6 @@ export function submitOrder(order, auth) {
     axios.post(`${API_URL}/dispatch/orders/create`, { order, auth })
     .then(({ data }) => {
       // TODO: handle with UI instead refresh
-      console.log(data);
       if (data.err) return;
       dispatch(loadStoreOrders(auth));
       dispatch(submitOrderSuccess(data));

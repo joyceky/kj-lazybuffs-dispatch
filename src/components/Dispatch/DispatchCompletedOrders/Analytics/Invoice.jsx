@@ -18,14 +18,13 @@ class InvoiceComponent extends Component {
           return parseFloat(curr) + (parseFloat(next.orders) * 2.50);
         }, 0);
 
-    console.log("order sub", orderSubTotal);
-    console.log("commish sub", commissionSubTotal);
     return (commissionSubTotal + orderSubTotal).toFixed(2);
   }
 
   render() {
     const today = new Date();
-    const dateString = `${today.getMonth()+1}/${today.getDate()}/${today.getFullYear()}`;
+    const month = parseInt(today.getMonth())+1;
+    const dateString = `${month}/${today.getDate()}/${today.getFullYear()}`;
     const totalBalance  = this.calcMonthTotal();
 
     return (
@@ -91,8 +90,7 @@ const style = {
     margin: '0 auto',
     height: '100px',
     fontSize: '22px',
-    fontWeight: 'bold',
-    // border: '1px solid #868686',
+    fontWeight: 'bold'
   },
   table: {
     width: '80%',

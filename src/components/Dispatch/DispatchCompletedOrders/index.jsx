@@ -54,7 +54,6 @@ class CompletedOrders extends Component {
     this.setState({ loading: true });
 
     if (parseInt(storeId) > 0) {
-      console.log(`${API_URL}/dispatch/stores/orders`, { auth: this.props.auth, storeId, month, year});
       axios.post(`${API_URL}/dispatch/stores/orders`, { auth: this.props.auth, storeId, month, year })
         .then(({ data }) => {
           this.setState({ orders: data, month, storeId, loading: false, shouldChartsBeVisible: true });
@@ -154,46 +153,48 @@ class CompletedOrders extends Component {
       <div>
         <section style={style.container}>
 
-        <section style={style.header}>
-            <span>Select a month, year, or store to view analytics:</span>
-              {/*<select style={style.select} onChange={this.onOrderTypeChange} >
-             <option value="all">All</option>
-              <option value="multi">Multi</option>
-              <option value="single">Single</option>
-            </select>*/}
+          <section style={style.header}>
 
+            <section style={style.buttonContainer}>
+            <section  style={style.buttonContainerDropdowns}>
+              <select style={style.select} onChange={this.selectMonth} value={this.state.month}>
+                {
+                  months.map((monthVal, i) => {
+                    return <option value={i} key={i}>{monthVal}</option>
+                  })
+                }
+              </select>
 
-            <select style={style.select} onChange={this.selectMonth} value={this.state.month}>
-              {
-                months.map((monthVal, i) => {
-                  return <option value={i} key={i}>{monthVal}</option>
-                })
-              }
-            </select>
+              <select style={style.select} onChange={this.selectYear} value={this.state.year}>
+                {
+                  [2014,2015,2016,2017]
+                  .map((year, i) => {
+                    return <option key={i} value={year}>{year}</option>
+                  })
+                }
+              </select>
 
-            <select style={style.select} onChange={this.selectYear} value={this.state.year}>
-              {
-                [2014,2015,2016,2017]
-                .map((year, i) => {
-                  return <option key={i} value={year}>{year}</option>
-                })
-              }
-            </select>
-
-            <select style={style.select} onChange={this.onStoreChange} value={this.state.storeId}>
-              <option key={0} value={0}>All Stores</option>
-              {
-                this.state.stores.map(store => {
-                  return <option key={store.storeName} value={store.storeId}>{store.storeName}</option>
-                })
-              }
-            </select>
+              <select style={style.select} onChange={this.onStoreChange} value={this.state.storeId}>
+                <option key={0} value={0}>All Stores</option>
+                {
+                  this.state.stores.map(store => {
+                    return <option key={store.storeName} value={store.storeId}>{store.storeName}</option>
+                  })
+                }
+              </select>
+            </section>
 
             <button className='generate-invoice-button' style={style.btn} onClick={() => this.toggleInvoice()}>Generate Invoice</button>
+          </section>
 
+
+          <section>
+            <p>{`Orders: ${ this.state.orders.length }`}</p>
+            <p>{`Revenue: $${ (this.calcRevenue(this.state.orders)).toFixed(2) }`}</p>
+          </section>
         </section>
-        <p>{`Revenue for ${months[this.state.month]} ${this.state.year}: $${ (this.calcRevenue(this.state.orders)).toFixed(2)}`}</p>
-        <p>{`Orders for ${months[this.state.month]} ${this.state.year}: ${ this.state.orders.length }`}</p>
+
+
 
           { this.state.loading ?
             <span style={style.subContainer}>
@@ -212,17 +213,16 @@ class CompletedOrders extends Component {
               </span> : null
             }
 
-            { !this.state.loading && this.state.orders.length > 0 ?
-              <div>
-                <section style={style.chartContainer}>
-                  <div>
-
+          {
+            !this.state.loading && this.state.orders.length > 0 ?
+            <div>
+              <section style={style.chartContainer}>
+                <div>
                   <p>Order Analytics</p>
                   <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="orders" color="#CFB87C" />
 
                   <p>Revenue Analytics</p>
                   <BarChartComponent orders={this.formatData(this.state.orders)} dataKey="total" color="#A2A4A3" />
-
                 </div>
               </section>
             </div>
@@ -255,7 +255,6 @@ const style = {
     fontSize: '22px',
     textDecoration: 'none',
     color: '#fff',
-    margin: '25px auto',
     backgroundColor: 'black',
     boxShadow: '0px 5px 0px 0px #565A5C',
     fontSize: '18px'
@@ -273,16 +272,21 @@ const style = {
     color: "#565A5C"
   },
   header: {
-    padding: '16px',
+    padding: '64px',
     width: '100%',
     boxSizing: 'border-box',
     display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: 'column',
     fontSize: '18px',
+  },
+  buttonContainer: {
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  buttonContainerDropdown: {
+
   },
   chartContainer: {
     maxWidth: '100%',
