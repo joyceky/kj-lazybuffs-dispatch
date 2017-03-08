@@ -299,6 +299,7 @@ export function loadAllActiveOrders(profile) {
     // dispatch(loadingAllActiveOrders());
     axios.post(`${API_URL}/dispatch/orders/active`, { profile })
     .then(({ data }) => {
+      console.log(data);
       dispatch(loadAllActiveOrdersSuccess(data));
       dispatch(clearLoadingAllActiveOrders());
     })
@@ -337,6 +338,7 @@ export function loadAllUnassignedOrders(profile) {
   return (dispatch) => {
     axios.post(`${API_URL}/dispatch/orders/unassigned`, { profile })
     .then(({ data }) => {
+      console.log(data);
       dispatch(loadAllUnassignedOrdersSuccess(data));
     })
     .catch((err) => {
@@ -431,6 +433,7 @@ export function getCompletedOrders (auth) {
     dispatch(loadingCompletedOrders());
     axios.post(`${API_URL}/dispatch/orders/completed`, { auth })
     .then(({ data }) => {
+      console.log(data);
       dispatch(getCompletedOrdersSuccess(data));
       dispatch(clearLoadingCompletedOrders());
     })

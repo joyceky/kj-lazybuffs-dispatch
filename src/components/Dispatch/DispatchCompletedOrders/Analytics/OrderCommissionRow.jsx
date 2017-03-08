@@ -10,7 +10,7 @@ render() {
         <tr>
           <td style={style.tableData}>{date}</td>
           <td style={style.tableData}>
-            <span style={{fontWeight: 'bold', fontSize: '18px'}}>Phone Delivery Orders: Phone Order Commission</span>
+            <span style={{fontWeight: 'bold', fontSize: '16px'}}>Phone Delivery Orders: Phone Order Commission</span>
             <br></br>
               ${this.props.order.total} @ 5%
           </td>
