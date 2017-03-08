@@ -145,6 +145,15 @@ class CompletedOrders extends Component {
     }
   }
 
+  sendInvoice() {
+     let table = document.getElementsByClassName('invoice');
+     console.log(table[0].innerHTML);
+     axios.post(`${API_URL}/new-invoice`, { table: table[0].innerHTML })
+     .then((data) => {
+       console.log(data);
+     })
+   }
+
   render() {
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -168,7 +177,7 @@ class CompletedOrders extends Component {
                 {
                   [2014,2015,2016,2017]
                   .map((year, i) => {
-                    return <option key={i} value={year}>{year}</option>
+                    return <option key={year} value={year}>{year}</option>
                   })
                 }
               </select>
@@ -182,8 +191,14 @@ class CompletedOrders extends Component {
                 }
               </select>
             </section>
-
+            { this.state.showInvoice ?
+              <div style={style.buttonDiv}>
+                <button className='generate-invoice-button' style={style.btn} onClick={() => this.toggleInvoice()}>Generate Invoice</button>
+                <button  style={style.btn} onClick={() => this.sendInvoice()}>Email Invoice</button>
+              </div>
+              :
             <button className='generate-invoice-button' style={style.btn} onClick={() => this.toggleInvoice()}>Generate Invoice</button>
+            }
           </section>
 
 
@@ -234,7 +249,6 @@ class CompletedOrders extends Component {
 }
 
 const style = {
-
   container: {
     marginTop: '50px',
     display: 'flex',
@@ -251,6 +265,7 @@ const style = {
     borderRadius: '5px',
     display: 'block',
     padding: '8px 10px',
+    margin: '10px',
     fontSize: '22px',
     textDecoration: 'none',
     color: '#fff',
@@ -284,8 +299,11 @@ const style = {
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  buttonContainerDropdown: {
-
+  buttonDiv: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   chartContainer: {
     maxWidth: '100%',
@@ -297,16 +315,6 @@ const style = {
     width: 'auto',
     fontSize: '20px',
     textAlign: 'center'
-  },
-  previewBanner: {
-    top: '50px',
-    left: '0',
-    width: '100%',
-    fontSize: '24px',
-    padding: '8px',
-    backgroundColor: '#414141',
-    textAlign: 'center',
-    color: '#FFB300',
   }
 }
 

@@ -28,7 +28,7 @@ class InvoiceComponent extends Component {
     const totalBalance  = this.calcMonthTotal();
 
     return (
-      <div>
+      <div className="invoice">
         <section style={style.invoiceHeader}>
           <div style={{float: 'left'}}>
             INVOICE
@@ -55,13 +55,13 @@ class InvoiceComponent extends Component {
           </thead>
           <tbody>
           {this.props.orders.length > 0 ?
-            this.props.orders.map(order => {
+            this.props.orders.map((order, i) => {
             return  ([
-                <InvoiceOrder style={style.tableRow} order={order} year={this.props.year} month={this.props.month} />,
-                <OrderCommissionRow style={style.tableRow} order={order} year={this.props.year} month={this.props.month} />
+                <InvoiceOrder style={style.tableRow} order={order} key={`row1${i}`} year={this.props.year} month={this.props.month} />,
+                <OrderCommissionRow style={style.tableRow} order={order} key={`row2${i}`} year={this.props.year} month={this.props.month} />
             ])
           }) : null}
-          </tbody>
+        </tbody>
           <tfoot style={style.tableFoot}>
             <tr>
                 <td></td>

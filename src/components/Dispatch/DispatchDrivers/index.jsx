@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+// import { BarChartComponent } from './Analytics/BarChart'; 
 import { loadDrivers, API_URL } from '../../../actions';
 import axios from 'axios';
 
