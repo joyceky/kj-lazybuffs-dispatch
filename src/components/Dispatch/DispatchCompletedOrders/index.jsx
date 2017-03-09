@@ -21,7 +21,8 @@ class CompletedOrders extends Component {
       storeName: 'All Stores',
       // orderType: "all",
       loading: false,
-      showInvoice: false
+      showInvoice: false,
+      showConfirmationModal: false
     };
 
     this.getStores = this.getStores.bind(this);
@@ -162,10 +163,11 @@ class CompletedOrders extends Component {
 
   sendInvoice() {
      let table = document.getElementsByClassName('invoice');
-     
+
      axios.post(`${API_URL}/new-invoice`, { table: table[0].innerHTML, storeName: this.state.storeName })
      .then((data) => {
        console.log(data);
+       this.setState({ showConfirmationModal: true });
      })
    }
 
@@ -174,6 +176,16 @@ class CompletedOrders extends Component {
 
     return (
       <div>
+
+        { this.state.showConfirmationModal ?
+          <div style={style.confirmationModal}>
+            <section style={style.confirmationCard}>
+            <h1 style={style.title}>Email invoice sent to ${this.state.storeName}</h1>
+            <button  style={style.confirmationBtn} onClick={() => this.setState({ showConfirmationModal: false })}>Close</button>
+            </section>
+          </div>
+          : null }
+
         <section style={style.container}>
 
           <section style={style.header}>
@@ -275,6 +287,39 @@ const style = {
     display: 'flex',
     flexDirection: 'column',
     width: '100%'
+  },
+  confirmationModal: {
+    position: 'fixed',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100vw',
+    height: '100vh',
+    zIndex: '3',
+    backgroundColor: 'rgba(0,0,0,0.44)'
+  },
+  confirmationBtn: {
+    borderRadius: '5px',
+    padding: '8px 10px',
+    margin: '10px',
+    fontSize: '22px',
+    textDecoration: 'none',
+    color: '#fff',
+    backgroundColor: 'black',
+    boxShadow: '0px 5px 0px 0px #565A5C',
+    height: '40px',
+    width: '100px',
+  },
+  confirmationCard: {
+    backgroundColor: 'white',
+    height: '300px',
+    width: '400px',
+    borderRadius: '5px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '16px',
   },
   subContainer: {
     display: 'flex',
